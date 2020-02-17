@@ -1,4 +1,6 @@
+import 'package:eggate/screens/register/Register.dart';
 import 'package:eggate/services/magento.dart';
+import 'package:eggate/services/screen_animation.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -59,11 +61,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         icon: Icon(Icons.mail),
                         suffixIcon: isMail == null
                             ? Container(
-                                width: 24,
-                              )
+                          width: 24,
+                        )
                             : isMail
-                                ? Icon(Icons.check)
-                                : Icon(Icons.error_outline),
+                            ? Icon(Icons.check)
+                            : Icon(Icons.error_outline),
                       ),
                       controller: _txtMail,
                       onChanged: (String text) {
@@ -77,11 +79,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         icon: Icon(Icons.lock),
                         suffixIcon: validPassword == null
                             ? Container(
-                                width: 24,
-                              )
+                          width: 24,
+                        )
                             : validPassword
-                                ? Icon(Icons.check)
-                                : Icon(Icons.error_outline),
+                            ? Icon(Icons.check)
+                            : Icon(Icons.error_outline),
                       ),
                       obscureText: true,
                       onChanged: (String text) {
@@ -91,10 +93,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     SizedBox(height: 40),
                     MaterialButton(
-                      minWidth: double.infinity,
+                      minWidth: MediaQuery.of(context).size.width * 0.6,
                       color: Theme.of(context).primaryColor,
                       child: Text(
-                        "Login",
+                        "Login".toUpperCase(),
                         style: TextStyle(color: Colors.white),
                       ),
                       onPressed: () {
@@ -127,14 +129,20 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Container(
               child: Center(
                 child: FlatButton(
-                  textColor: Theme.of(context).primaryColor,
+                  textColor: Theme
+                      .of(context)
+                      .primaryColor,
                   child: Text(
                     "I'm a new user",
                     style: TextStyle(
                       decoration: TextDecoration.underline,
                     ),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(context).push(MyCustomRoute(
+                        builder: (BuildContext context, d, s) =>
+                            RegisterScreen()));
+                  },
                 ),
               ),
             ),

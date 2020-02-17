@@ -109,6 +109,9 @@ class User {
     final ready = await storage.ready;
 
     final json = await storage.getItem("user");
+    if (json == null) {
+      return null;
+    }
     return User.fromJson(json);
   }
 
