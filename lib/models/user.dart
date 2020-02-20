@@ -14,7 +14,7 @@ class User {
   DateTime createdAt;
   DateTime updatedAt;
   String createdIn;
-  DateTime dob;
+
   String email;
   String firstname;
   String lastname;
@@ -33,7 +33,6 @@ class User {
     this.createdAt,
     this.updatedAt,
     this.createdIn,
-    this.dob,
     this.email,
     this.firstname,
     this.lastname,
@@ -57,7 +56,6 @@ class User {
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
         createdIn: json["created_in"],
-        dob: DateTime.parse(json["dob"]),
         email: json["email"],
         firstname: json["firstname"],
         lastname: json["lastname"],
@@ -79,8 +77,6 @@ class User {
         "created_at": createdAt.toIso8601String(),
         "updated_at": updatedAt.toIso8601String(),
         "created_in": createdIn,
-        "dob":
-            "${dob.year.toString().padLeft(4, '0')}-${dob.month.toString().padLeft(2, '0')}-${dob.day.toString().padLeft(2, '0')}",
         "email": email,
         "firstname": firstname,
         "lastname": lastname,
@@ -96,7 +92,7 @@ class User {
     try {
       final ready = await storage.ready;
       if (ready) {
-        await storage.setItem("user", user);
+        await storage.setItem("user", user.toJson());
         print("Basem Saved to local store");
       }
     } catch (err) {

@@ -3,6 +3,7 @@ import 'package:eggate/screens/home/home_main.dart';
 import 'package:eggate/screens/home/home_profile.dart';
 import 'package:eggate/screens/home/home_sale.dart';
 import 'package:eggate/screens/home/home_shopping.dart';
+import 'package:eggate/services/magento.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -19,19 +20,30 @@ class HomeScreen extends StatefulWidget {
 class _Home extends State<HomeScreen> with SingleTickerProviderStateMixin {
   // functions for building data
   TabController tabController;
-  int _itemCount = 2;
+  int _itemCount = 0;
   var _tabs;
   List<Widget> _pages;
   int tabIndex = 0;
 
   _Home(this.tabIndex);
+
   @override
   void initState() {
+    refreshScreen();
     _getTabs();
     tabController = TabController(length: _pages.length, vsync: this);
 
     super.initState();
     tabController.index = tabIndex;
+  }
+
+  void refreshScreen() {
+    MagentoApi().getCartItems().then((items) {
+      setState(() {
+        _itemCount = items.length ?? 0;
+        _getTabs();
+      });
+    });
   }
 
   @override

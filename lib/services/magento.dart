@@ -3,23 +3,32 @@ import 'dart:convert' as convert;
 import 'package:eggate/models/Filters.dart';
 import 'package:eggate/models/banner.dart';
 import 'package:eggate/models/category.dart';
+import 'package:eggate/models/country.dart';
+import 'package:eggate/models/orderModel.dart';
 import 'package:eggate/models/product.dart';
 import 'package:eggate/models/reivew.dart';
+import 'package:eggate/models/shippingMethod.dart';
 import 'package:eggate/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:localstorage/localstorage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../widgets/FilterDrawer.dart';
 
 class MagentoApi {
   static final MagentoApi _instance = MagentoApi._internal();
+
   factory MagentoApi() => _instance;
+
   MagentoApi._internal();
+
   String domain = "https://eggate.shop/";
   String accessToken = "mo70do8nzd0k4kyl4q9h81m71or071ea";
   String locale;
   String storeCode;
+  String cookie;
+
   // Map<String, ProductAttribute> attributes;
 
   Future<List<AppBanner>> getSliderImages() async {
@@ -41,6 +50,14 @@ class MagentoApi {
       return list;
     } catch (e) {}
     return [];
+  }
+
+// get User Token
+
+  Future<bool> getCookie() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    cookie = sharedPreferences.getString("cookie") ?? "";
+    return true;
   }
 
 // get Deals API
@@ -212,7 +229,14 @@ class MagentoApi {
       if (ready) {
         List items = await storage.getItem("cart");
         if (items != null && items.isNotEmpty) {
-          items.add({"product": product.toJson(), "quantity": quantity});
+          bool here = items.any((p) => p["product"] == product.toJson());
+          if (here) {
+            int idx =
+                items.lastIndexWhere((p) => p["product"] == product.toJson());
+            items[idx]["quantity"]++;
+          } else {
+            items.add({"product": product.toJson(), "quantity": quantity});
+          }
         } else {
           items = [
             {"product": product.toJson(), "quantity": quantity}
@@ -226,11 +250,46 @@ class MagentoApi {
     }
   }
 
+  Future<List> getCartItems() async {
+    final LocalStorage storage = new LocalStorage("eggate");
+    final ready = await storage.ready;
+
+    if (ready) {
+      List items = await storage.getItem("cart");
+
+      return items;
+    }
+    return [];
+  }
+
+  // delete product from cart
+
+  void deleteFromCartLocal({Product product}) async {
+    final LocalStorage storage = new LocalStorage("eggate");
+    final ready = await storage.ready;
+    List items = await storage.getItem("cart");
+    var it = items
+        .lastWhere((p) =>
+    Product
+        .fromJson(p["product"])
+        .sku == product.sku);
+
+    items.remove(it);
+    await storage.setItem("cart", items);
+  }
+
+  // save to wish list
+
+  void saveToWishListLocal({Product product}) async {
+    final LocalStorage storage = new LocalStorage("eggate");
+    final ready = await storage.ready;
+  }
+
 // get category filters
   Future<List<Filters>> getFilters(int categoryId) async {
     try {
       var response = await http.get(
-          //EG201570000036
+        //EG201570000036
           "$domain/rest/default/V1/categories/$categoryId/filterable",
           headers: {'Authorization': 'Bearer ' + accessToken});
       var items = convert.jsonDecode(response.body);
@@ -254,7 +313,10 @@ class MagentoApi {
         body: convert.jsonEncode({"username": username, "password": password}),
         headers: {"Content-Type": "application/json"});
     print("Basem ${response.body}");
-    return getUserInfo(convert.jsonDecode(response.body));
+    String cookie = convert.jsonDecode(response.body);
+    SharedPreferences shared = await SharedPreferences.getInstance();
+    shared.setString("cookie", cookie);
+    return getUserInfo(cookie);
   }
 
   Future<User> getUserInfo(token) async {
@@ -266,6 +328,210 @@ class MagentoApi {
 
     var user = User.fromMap(convert.jsonDecode(res.body));
     user.saveUserLocal(user);
+
     return user;
+  }
+
+  Future<User> createUser({firstName, lastName, username, password}) async {
+    try {
+      var response = await http.post("$domain/rest/default/V1/customers",
+          body: convert.jsonEncode({
+            "customer": {
+              "firstname": firstName,
+              "lastname": lastName,
+              "email": username
+            },
+            "password": password
+          }),
+          headers: {"content-type": "application/json"});
+
+      if (response.statusCode == 200) {
+        return await this.loginCustomer(username, password);
+      } else {
+        final body = convert.jsonDecode(response.body);
+        String message = body["message"];
+
+        throw Exception(message != null ? message : "Can not get token");
+      }
+    } catch (err) {
+      throw err;
+    }
+  }
+
+// order processing
+  Future<bool> addToCart() async {
+    String qoute = await createQuote();
+    List items = await getCartItems();
+    print("Basem qoute from cart $qoute");
+    await Future.forEach(items, (f) async {
+      Product product = Product.fromJson(f["product"]);
+      int qty = f["quantity"];
+      try {
+        var response =
+        await http.post("$domain/rest/default/V1/carts/mine/items",
+            body: convert.jsonEncode({
+              "cartItem": {
+                "sku": product.sku,
+                "qty": qty,
+                "quote_id": qoute
+              }
+            }),
+            headers: {
+              "content-type": "application/json",
+              'Authorization': 'Bearer ' + cookie,
+            });
+        if (response.statusCode != 200) {
+          var body = convert.jsonDecode(response.body);
+          String message = body["message"];
+          throw Exception(message);
+        }
+        return;
+      } catch (e) {
+        throw e;
+      }
+    });
+
+    return true;
+  }
+
+  Future<String> createQuote() async {
+    await getCookie();
+    print("Basem Cookie $cookie");
+    try {
+      var response =
+      await http.post("$domain/rest/default/V1/carts/mine", headers: {
+        "content-type": "application/json",
+        'Authorization': 'Bearer ' + cookie,
+      });
+      if (response.statusCode == 200) {
+        var qouteId = convert.jsonDecode(response.body);
+        print("Basem qoute Id is $qouteId");
+        return qouteId.toString();
+      } else if (response.statusCode == 401) {
+        final body = convert.jsonDecode(response.body);
+        String message = body["message"];
+
+        throw Exception(message != null ? message : "Can not get token");
+      } else {
+        throw Exception(response.body);
+      }
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  Future<List<Country>> getCountries() async {
+    //V1/directory/countries
+    var res =
+    await http.get("$domain/rest/default/V1/directory/countries", headers: {
+      "content-type": "application/json",
+      'Authorization': 'Bearer ' + accessToken,
+    });
+    if (res.statusCode == 200) {
+      List<Country> list = [];
+      for (var item in convert.jsonDecode(res.body)) {
+        Country country = Country.fromMap(item);
+        if (country.fullNameEnglish != null &&
+            country.fullNameEnglish.isNotEmpty) {
+          list.add(country);
+        }
+      }
+      print("Basem $list");
+      return list;
+    }
+
+    return [];
+  }
+
+  Future<List<ShippingMethod>> getShippingMethod(Address address) async {
+    await getCookie();
+    var response = await http.post(
+        "$domain/rest/default/V1/carts/mine/estimate-shipping-methods",
+        headers: {
+          "content-type": "application/json",
+          'Authorization': 'Bearer ' + cookie,
+        },
+        body: convert.jsonEncode(
+          {
+            "address": {
+              "region_id": address.regionId,
+              "country_id": address.countryId
+            }
+          },
+        ));
+    List<ShippingMethod> list = [];
+    if (response.statusCode == 200) {
+      for (var item in convert.jsonDecode(response.body)) {
+        list.add(ShippingMethod.fromMap(item));
+      }
+      return list;
+    }
+    return [];
+  }
+
+  Future<OrderModel> getOrderModel(
+      {Address address, ShippingMethod shippingMethod}) async {
+    await getCookie();
+    var response = await http.post(
+        "$domain/rest/default/V1/carts/mine/shipping-information",
+        headers: {
+          "content-type": "application/json",
+          'Authorization': 'Bearer ' + cookie,
+        },
+        body: convert.jsonEncode({
+          "addressInformation": {
+            "shipping_address": {
+              "region_id": address.regionId,
+              "country_id": address.countryId
+            },
+            "billing_address": {
+              "region_id": address.regionId,
+              "country_id": address.countryId
+            },
+            "shipping_carrier_code": shippingMethod.carrierCode,
+            "shipping_method_code": shippingMethod.methodCode
+          }
+        }));
+    if (response.statusCode == 200) {
+      return OrderModel.fromMap(convert.jsonDecode(response.body));
+    }
+    return throw Exception(response.body);
+  }
+
+  Future createOrder({String methodName, Address address}) async {
+    await getCookie();
+
+    var requestBody = convert.jsonEncode(
+      {
+        "paymentMethod": {"method": methodName},
+        "billing_address": {
+          "region": address.region.region,
+          "region_id": address.regionId,
+          "region_code": address.region.regionCode,
+          "country_id": address.countryId,
+          "street": address.street,
+          "postcode": address.postcode,
+          "city": address.city,
+          "telephone": address.telephone,
+          "firstname": address.firstname,
+          "lastname": address.lastname
+        }
+      },
+    );
+
+    print("Basem request body $requestBody");
+
+    var response = await http.post(
+        "$domain/rest/default/V1/carts/mine/payment-information",
+        headers: {
+          "content-type": "application/json",
+          'Authorization': 'Bearer ' + cookie,
+        },
+        body: requestBody);
+    var body = convert.jsonDecode(response.body);
+    print("Basem $body");
+    if (response.statusCode == 200) {
+      print("BAsem created order $body");
+    }
   }
 }

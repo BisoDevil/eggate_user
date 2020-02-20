@@ -1,5 +1,7 @@
 import 'package:eggate/models/user.dart';
+import 'package:eggate/screens/checkout/address/AddressScreen.dart';
 import 'package:eggate/screens/login/Login.dart';
+import 'package:eggate/services/screen_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -127,6 +129,28 @@ class _HomeProfileState extends State<HomeProfile> {
               ]),
               onTap: () {
                 // Navigator.pushNamed(context, "/wishlist");
+              },
+            ),
+          ),
+          Divider(
+            color: Colors.black12,
+            height: 1.0,
+            indent: 75,
+            //endIndent: 20,
+          ),
+          Card(
+            margin: EdgeInsets.only(bottom: 2.0),
+            elevation: 0,
+            child: ListTile(
+              leading: Icon(
+                Icons.place,
+                size: 26,
+              ),
+              title: Text("My Address", style: TextStyle(fontSize: 15)),
+              trailing: Icon(Icons.arrow_forward_ios, size: 18),
+              onTap: () {
+                Navigator.of(context)
+                    .push(MyCustomRoute(builder: (q, w, e) => AddressScreen()));
               },
             ),
           ),

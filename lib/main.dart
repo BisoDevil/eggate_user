@@ -1,6 +1,7 @@
-import 'package:eggate/screens/SplashScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+import 'screens/checkout/orderConfirmation.dart';
 
 void main() async {
   // SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -20,7 +21,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: Color(0xffb69876),
       ),
-      home: SplashScreen(),
+      home: OrderConfirmation(),
+//      home: SplashScreen(),
     );
   }
 }

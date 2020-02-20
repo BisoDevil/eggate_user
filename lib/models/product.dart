@@ -14,8 +14,7 @@ class Product {
   int status;
   int visibility;
   String typeId;
-  DateTime createdAt;
-  DateTime updatedAt;
+
   num weight;
   ExtensionAttributes extensionAttributes;
   List<dynamic> productLinks;
@@ -33,8 +32,6 @@ class Product {
     this.status,
     this.visibility,
     this.typeId,
-    this.createdAt,
-    this.updatedAt,
     this.weight,
     this.extensionAttributes,
     this.productLinks,
@@ -56,8 +53,6 @@ class Product {
         status: json["status"],
         visibility: json["visibility"],
         typeId: json["type_id"],
-        createdAt: DateTime.parse(json["created_at"]),
-        updatedAt: DateTime.parse(json["updated_at"]),
         weight: json["weight"],
         extensionAttributes:
             ExtensionAttributes.fromMap(json["extension_attributes"]),
@@ -79,8 +74,6 @@ class Product {
         "status": status,
         "visibility": visibility,
         "type_id": typeId,
-        "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
         "weight": weight,
         "extension_attributes": extensionAttributes.toMap(),
         "product_links": List<dynamic>.from(productLinks.map((x) => x)),
@@ -119,16 +112,10 @@ class CustomAttribute {
 }
 
 class ExtensionAttributes {
-  List<int> websiteIds;
-  List<CategoryLink> categoryLinks;
   num discountedPrice;
   num discountPercentage;
 
-  ExtensionAttributes(
-      {this.websiteIds,
-      this.categoryLinks,
-      this.discountedPrice,
-      this.discountPercentage});
+  ExtensionAttributes({this.discountedPrice, this.discountPercentage});
 
   factory ExtensionAttributes.fromJson(String str) =>
       ExtensionAttributes.fromMap(json.decode(str));
@@ -137,43 +124,12 @@ class ExtensionAttributes {
 
   factory ExtensionAttributes.fromMap(Map<String, dynamic> json) =>
       ExtensionAttributes(
-          websiteIds: List<int>.from(json["website_ids"].map((x) => x)),
-          categoryLinks: List<CategoryLink>.from(
-              json["category_links"].map((x) => CategoryLink.fromMap(x))),
           discountedPrice: json["discounted_price"],
           discountPercentage: json["discount_percentage"]);
 
   Map<String, dynamic> toMap() => {
-        "website_ids": List<dynamic>.from(websiteIds.map((x) => x)),
-        "category_links":
-            List<dynamic>.from(categoryLinks.map((x) => x.toMap())),
         "discounted_price": discountedPrice,
         "discount_percentage": discountPercentage
-      };
-}
-
-class CategoryLink {
-  int position;
-  String categoryId;
-
-  CategoryLink({
-    this.position,
-    this.categoryId,
-  });
-
-  factory CategoryLink.fromJson(String str) =>
-      CategoryLink.fromMap(json.decode(str));
-
-  String toJson() => json.encode(toMap());
-
-  factory CategoryLink.fromMap(Map<String, dynamic> json) => CategoryLink(
-        position: json["position"],
-        categoryId: json["category_id"],
-      );
-
-  Map<String, dynamic> toMap() => {
-        "position": position,
-        "category_id": categoryId,
       };
 }
 

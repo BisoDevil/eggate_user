@@ -1,4 +1,5 @@
 import 'package:eggate/models/product.dart';
+import 'package:eggate/screens/HomeScreen.dart';
 import 'package:eggate/screens/detail/detail.dart';
 import 'package:eggate/services/magento.dart';
 import 'package:flutter/material.dart';
@@ -120,6 +121,7 @@ class ProductCard extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(4)),
                               onPressed: () {
                                 MagentoApi().saveCartToLocal(product: _product);
+                                HomeScreen.of(context).refreshScreen();
                                 print("Basem button pressed ${_product.id}");
                               },
                               child: Text(
