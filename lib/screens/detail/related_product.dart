@@ -1,12 +1,13 @@
+import 'package:async/async.dart';
 import 'package:eggate/models/product.dart';
 import 'package:eggate/services/magento.dart';
 import 'package:eggate/widgets/product_card.dart';
 import 'package:flutter/material.dart';
-import 'package:async/async.dart';
 
 class RelatedProduct extends StatelessWidget {
   final Product product;
   final _memoizer = AsyncMemoizer<List<Product>>();
+
   RelatedProduct(this.product) {
     var cat = product.customAttributes
         .firstWhere((c) => c.attributeCode == "category_ids")
@@ -69,7 +70,7 @@ class RelatedProduct extends StatelessWidget {
                         ),
                       ),
                       Container(
-                          height: constraint.maxWidth * 0.7,
+                          height: constraint.maxWidth * 0.6,
                           child: ListView(
                             shrinkWrap: true,
                             scrollDirection: Axis.horizontal,

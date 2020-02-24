@@ -98,10 +98,9 @@ class _HomeMainState extends State<HomeMain> {
                             },
                             child: Image.network(
                               (snapshot.data as List<AppBanner>)[0].image,
-                              width: double.infinity,
                               fit: BoxFit.fitWidth,
-                              height: 180,
-                              scale: 16 / 9,
+                              height: MediaQuery.of(context).size.height * 0.28,
+                              width: MediaQuery.of(context).size.width,
                               alignment: Alignment.topCenter,
                             ),
                           )

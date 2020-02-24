@@ -1,10 +1,13 @@
 import 'package:carousel_pro/carousel_pro.dart';
 import 'package:eggate/models/product.dart';
+import 'package:eggate/models/user.dart';
 import 'package:eggate/screens/detail/detai_description.dart';
 import 'package:eggate/screens/detail/detail_review.dart';
 import 'package:eggate/screens/detail/detail_title.dart';
 import 'package:eggate/screens/detail/related_product.dart';
+import 'package:eggate/screens/login/Login.dart';
 import 'package:eggate/services/magento.dart';
+import 'package:eggate/services/screen_animation.dart';
 import 'package:flutter/material.dart';
 
 class ProductDetailScreen extends StatefulWidget {
@@ -21,11 +24,24 @@ class ProductDetailScreen extends StatefulWidget {
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
 
-  void saveToCart() {
-    MagentoApi().saveCartToLocal(product: widget._product);
-    _drawerKey.currentState.showSnackBar(SnackBar(
-      content: Text("Item Added"),
-    ));
+  void saveToCart() async {
+    var user = await User().getUserLocal();
+    if (user == null) {
+      Navigator.of(context)
+          .push(MyCustomRoute(builder: (q, w, e) => LoginScreen()));
+      return;
+    }
+    MagentoApi().addToCart(product: widget._product).catchError((err) {
+      _drawerKey.currentState.showSnackBar(SnackBar(
+        content: Text(err.toString()),
+      ));
+    }).then((value) {
+      if (value != null && value == true) {
+        _drawerKey.currentState.showSnackBar(SnackBar(
+          content: Text("Item Added"),
+        ));
+      }
+    });
   }
 
   @override
@@ -45,17 +61,24 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             child: Carousel(
               images: List.generate(
                 widget._product.mediaGalleryEntries.length,
-                (i) => Image.network(
-                  widget._product.mediaGalleryEntries[i].file,
-                  fit: BoxFit.cover,
-                ),
+                    (i) =>
+                    Image.network(
+                      widget._product.mediaGalleryEntries[i].file,
+                      fit: BoxFit.cover,
+                    ),
               ),
               autoplay: false,
               dotSize: 5.0,
               dotSpacing: 15.0,
-              dotColor: Theme.of(context).backgroundColor.withOpacity(0.7),
+              dotColor: Theme
+                  .of(context)
+                  .backgroundColor
+                  .withOpacity(0.7),
               dotIncreasedColor:
-              Theme.of(context).primaryColor.withOpacity(0.9),
+              Theme
+                  .of(context)
+                  .primaryColor
+                  .withOpacity(0.9),
               indicatorBgPadding: 5.0,
               dotBgColor: Colors.transparent,
             ),

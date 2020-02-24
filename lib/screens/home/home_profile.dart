@@ -98,8 +98,10 @@ class _HomeProfileState extends State<HomeProfile> {
               ),
             ),
           SizedBox(height: 30.0),
-          Text("General Setting",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+          Text(
+            "General Setting",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          ),
           SizedBox(height: 10.0),
           if (widget.user != null)
             Divider(
@@ -217,8 +219,10 @@ class _HomeProfileState extends State<HomeProfile> {
             //endIndent: 20,
           ),
           SizedBox(height: 30.0),
-          Text("Order details",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+          Text(
+            "Order details",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          ),
           SizedBox(height: 10.0),
           if (widget.user != null)
             GestureDetector(

@@ -3,7 +3,9 @@ import 'package:eggate/screens/home/home_main.dart';
 import 'package:eggate/screens/home/home_profile.dart';
 import 'package:eggate/screens/home/home_sale.dart';
 import 'package:eggate/screens/home/home_shopping.dart';
+import 'package:eggate/screens/search/SearchScreen.dart';
 import 'package:eggate/services/magento.dart';
+import 'package:eggate/services/screen_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -127,19 +129,28 @@ class _Home extends State<HomeScreen> with SingleTickerProviderStateMixin {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).primaryColor,
         title: Center(
           child: Container(
             child: ClipRRect(
               borderRadius: BorderRadius.circular(6),
-              child: TextFormField(
+              child: TextField(
                 autocorrect: true,
                 maxLines: 1,
+                readOnly: true,
+                onTap: () {
+                  Navigator.of(context).push(
+                      MyCustomRoute(builder: (q, w, e) => SearchScreen()));
+                  print("Search clicked");
+                },
                 decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.search),
-                  suffixIcon: Icon(Icons.camera_alt),
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: Colors.white,
+                  ),
                   border: InputBorder.none,
                   hintText: "I'm looking for",
+                  hintStyle: TextStyle(color: Colors.white),
                   hintMaxLines: 1,
                   filled: true,
                 ),

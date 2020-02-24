@@ -100,13 +100,8 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
     return Scaffold(
       key: _globalKey,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        iconTheme: Theme.of(context)
-            .iconTheme
-            .copyWith(color: Theme.of(context).primaryColor),
         title: Text(
-          "New Address",
-          style: TextStyle(color: Theme.of(context).primaryColor),
+          "New Address".toUpperCase(),
         ),
       ),
       body: SingleChildScrollView(
@@ -128,9 +123,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                           : null),
                   controller: _firstName,
                   onChanged: (String text) {
-                    setState(() {
-                      _firstName.text = text;
-                    });
+                    setState(() {});
                   },
                 ),
                 SizedBox(

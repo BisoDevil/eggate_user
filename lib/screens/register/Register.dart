@@ -132,7 +132,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             labelText: "First name",
                             icon: Icon(FontAwesomeIcons.user),
                             suffixIcon:
-                            isFirstValid ? Icon(Icons.check) : null),
+                                isFirstValid ? Icon(Icons.check) : null),
                         controller: _firstName,
                         onChanged: (String text) {
                           setState(() {

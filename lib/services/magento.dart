@@ -2,6 +2,7 @@ import 'dart:convert' as convert;
 
 import 'package:eggate/models/Filters.dart';
 import 'package:eggate/models/banner.dart';
+import 'package:eggate/models/cart.dart';
 import 'package:eggate/models/category.dart';
 import 'package:eggate/models/country.dart';
 import 'package:eggate/models/orderModel.dart';
@@ -25,7 +26,7 @@ class MagentoApi {
 
   String domain = "https://eggate.shop/";
   String accessToken = "mo70do8nzd0k4kyl4q9h81m71or071ea";
-  String locale;
+  String locale = "default";
   String storeCode;
   String cookie;
 
@@ -221,61 +222,94 @@ class MagentoApi {
     }
   }
 
-// save product to cart
-  void saveCartToLocal({Product product, int quantity = 1}) async {
+//// save product to cart
+//  void saveCartToLocal({Product product, int quantity = 1}) async {
+//    final LocalStorage storage = new LocalStorage("eggate");
+//    try {
+//      final ready = await storage.ready;
+//      if (ready) {
+//        List items = await storage.getItem("cart");
+//        if (items != null && items.isNotEmpty) {
+//          bool here = items.any((p) => p["product"] == product.toJson());
+//          if (here) {
+//            int idx =
+//                items.lastIndexWhere((p) => p["product"] == product.toJson());
+//            items[idx]["quantity"]++;
+//          } else {
+//            items.add({"product": product.toJson(), "quantity": quantity});
+//          }
+//        } else {
+//          items = [
+//            {"product": product.toJson(), "quantity": quantity}
+//          ];
+//        }
+//        await storage.setItem("cart", items);
+//        print("Basem Saved to local store");
+//      }
+//    } catch (err) {
+//      print(err);
+//    }
+//  }
+
+  Future<List<Cart>> getCartItems() async {
+    // get cart products
+    await getCookie();
+    var response =
+        await http.get("$domain/rest/default/V1/carts/mine/items", headers: {
+      "content-type": "application/json",
+      'Authorization': 'Bearer ' + cookie,
+    });
     final LocalStorage storage = new LocalStorage("eggate");
-    try {
-      final ready = await storage.ready;
-      if (ready) {
-        List items = await storage.getItem("cart");
-        if (items != null && items.isNotEmpty) {
-          bool here = items.any((p) => p["product"] == product.toJson());
-          if (here) {
-            int idx =
-                items.lastIndexWhere((p) => p["product"] == product.toJson());
-            items[idx]["quantity"]++;
-          } else {
-            items.add({"product": product.toJson(), "quantity": quantity});
-          }
-        } else {
-          items = [
-            {"product": product.toJson(), "quantity": quantity}
-          ];
-        }
-        await storage.setItem("cart", items);
-        print("Basem Saved to local store");
+    await storage.ready;
+    List<Cart> list = [];
+    if (response.statusCode == 200) {
+      for (var item in convert.jsonDecode(response.body)) {
+        Cart cart = Cart.fromMap(item);
+        list.add(cart);
       }
-    } catch (err) {
-      print(err);
+      await storage.setItem("cart", list);
+
+      return list;
     }
-  }
-
-  Future<List> getCartItems() async {
-    final LocalStorage storage = new LocalStorage("eggate");
-    final ready = await storage.ready;
-
-    if (ready) {
-      List items = await storage.getItem("cart");
-
-      return items;
-    }
+//    if (ready) {
+//      List items = await storage.getItem("cart");
+//
+//      return items;
+//    }
     return [];
   }
 
   // delete product from cart
 
-  void deleteFromCartLocal({Product product}) async {
-    final LocalStorage storage = new LocalStorage("eggate");
-    final ready = await storage.ready;
-    List items = await storage.getItem("cart");
-    var it = items
-        .lastWhere((p) =>
-    Product
-        .fromJson(p["product"])
-        .sku == product.sku);
+  Future<bool> deleteFromCart({int itemId}) async {
+    await getCookie();
+    var res = await http
+        .delete("$domain/rest/default/V1/carts/mine/items/$itemId", headers: {
+      "content-type": "application/json",
+      'Authorization': 'Bearer ' + cookie,
+    });
+    if (res.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
-    items.remove(it);
-    await storage.setItem("cart", items);
+  Future<Cart> updateItemFromCart({Cart cart}) async {
+    await getCookie();
+    var res = await http.put(
+        "$domain/rest/default/V1/carts/mine/items/${cart.itemId}",
+        body: convert.jsonEncode({"cartItem": cart.toMap()}),
+        headers: {
+          "content-type": "application/json",
+          'Authorization': 'Bearer ' + cookie,
+        });
+    var body = convert.jsonDecode(res.body);
+    if (res.statusCode == 200) {
+      return Cart.fromMap(body);
+    } else {
+      return throw Exception("${body["message"]}");
+    }
   }
 
   // save to wish list
@@ -359,37 +393,30 @@ class MagentoApi {
   }
 
 // order processing
-  Future<bool> addToCart() async {
+  Future<bool> addToCart({@required Product product}) async {
     String qoute = await createQuote();
-    List items = await getCartItems();
+
     print("Basem qoute from cart $qoute");
-    await Future.forEach(items, (f) async {
-      Product product = Product.fromJson(f["product"]);
-      int qty = f["quantity"];
-      try {
-        var response =
-        await http.post("$domain/rest/default/V1/carts/mine/items",
-            body: convert.jsonEncode({
-              "cartItem": {
-                "sku": product.sku,
-                "qty": qty,
-                "quote_id": qoute
-              }
-            }),
-            headers: {
-              "content-type": "application/json",
-              'Authorization': 'Bearer ' + cookie,
-            });
-        if (response.statusCode != 200) {
-          var body = convert.jsonDecode(response.body);
-          String message = body["message"];
-          throw Exception(message);
-        }
-        return;
-      } catch (e) {
-        throw e;
+
+    try {
+      var response = await http.post("$domain/rest/default/V1/carts/mine/items",
+          body: convert.jsonEncode({
+            "cartItem": {"sku": product.sku, "qty": 1, "quote_id": qoute}
+          }),
+          headers: {
+            "content-type": "application/json",
+            'Authorization': 'Bearer ' + cookie,
+          });
+      var body = convert.jsonDecode(response.body);
+      if (response.statusCode != 200) {
+        String message = body["message"];
+        throw Exception(message);
+      } else {
+        print("Added to cart $body");
       }
-    });
+    } catch (e) {
+      throw e;
+    }
 
     return true;
   }
@@ -459,9 +486,11 @@ class MagentoApi {
             }
           },
         ));
+    var body = convert.jsonDecode(response.body);
+    print("Basem shipping method ${body}");
     List<ShippingMethod> list = [];
     if (response.statusCode == 200) {
-      for (var item in convert.jsonDecode(response.body)) {
+      for (var item in body) {
         list.add(ShippingMethod.fromMap(item));
       }
       return list;
@@ -472,33 +501,52 @@ class MagentoApi {
   Future<OrderModel> getOrderModel(
       {Address address, ShippingMethod shippingMethod}) async {
     await getCookie();
+
+    var parm = {
+      "addressInformation": {
+        "shipping_address": {
+          "region": address.region.region,
+          "region_id": address.regionId,
+          "region_code": address.region.regionCode,
+          "country_id": address.countryId,
+          "street": address.street,
+          "postcode": address.postcode,
+          "city": address.city,
+          "firstname": address.firstname,
+          "lastname": address.lastname,
+          "telephone": address.telephone
+        },
+        "billing_address": {
+          "region": address.region.region,
+          "region_id": address.regionId,
+          "region_code": address.region.regionCode,
+          "country_id": address.countryId,
+          "street": address.street,
+          "postcode": address.postcode,
+          "city": address.city,
+          "firstname": address.firstname,
+          "lastname": address.lastname,
+          "telephone": address.telephone
+        },
+        "shipping_carrier_code": shippingMethod.carrierCode,
+        "shipping_method_code": shippingMethod.methodCode
+      }
+    };
+    print("Basem request $parm");
     var response = await http.post(
         "$domain/rest/default/V1/carts/mine/shipping-information",
         headers: {
           "content-type": "application/json",
           'Authorization': 'Bearer ' + cookie,
         },
-        body: convert.jsonEncode({
-          "addressInformation": {
-            "shipping_address": {
-              "region_id": address.regionId,
-              "country_id": address.countryId
-            },
-            "billing_address": {
-              "region_id": address.regionId,
-              "country_id": address.countryId
-            },
-            "shipping_carrier_code": shippingMethod.carrierCode,
-            "shipping_method_code": shippingMethod.methodCode
-          }
-        }));
+        body: convert.jsonEncode(parm));
     if (response.statusCode == 200) {
       return OrderModel.fromMap(convert.jsonDecode(response.body));
     }
     return throw Exception(response.body);
   }
 
-  Future createOrder({String methodName, Address address}) async {
+  Future<int> createOrder({String methodName, Address address}) async {
     await getCookie();
 
     var requestBody = convert.jsonEncode(
@@ -532,6 +580,39 @@ class MagentoApi {
     print("Basem $body");
     if (response.statusCode == 200) {
       print("BAsem created order $body");
+      return body;
+    } else {
+      return throw Exception("$body");
+    }
+  }
+
+  Future<List<Product>> searchProducts({name, page}) async {
+    try {
+      var endPoint = "?";
+      if (name != null) {
+        endPoint +=
+        "searchCriteria[filter_groups][0][filters][0][field]=name&searchCriteria[filter_groups][0][filters][0][value]=%$name%&searchCriteria[filter_groups][0][filters][0][condition_type]=like";
+      }
+      if (page != null) {
+        endPoint += "&searchCriteria[currentPage]=$page";
+      }
+      endPoint += "&searchCriteria[pageSize]=10";
+
+      var response = await http.get("$domain/rest/$locale/V1/products$endPoint",
+          headers: {'Authorization': 'Bearer ' + accessToken});
+
+      List<Product> list = [];
+      if (response.statusCode == 200) {
+        for (var item in convert.jsonDecode(response.body)["items"]) {
+          Product product = Product.fromMap(item);
+          if (product.price != null && product.price > 1) {
+            list.add(product);
+          }
+        }
+      }
+      return list;
+    } catch (err) {
+      throw err;
     }
   }
 }

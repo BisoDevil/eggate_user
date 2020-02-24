@@ -70,10 +70,9 @@ class _AddressScreenState extends State<AddressScreen> {
   }
 
   void goToShipping() {
-    MagentoApi()
-        .getShippingMethod(selectedAddress)
-        .catchError((e) {})
-        .then((value) {
+    MagentoApi().getShippingMethod(selectedAddress).catchError((e) {
+      print("Basem error shipping ${e.toString()}");
+    }).then((value) {
       if (value != null && value.isNotEmpty) {
         setState(() {
           _shippingMethod = value.first;
@@ -95,13 +94,8 @@ class _AddressScreenState extends State<AddressScreen> {
     return Scaffold(
       key: _globalKey,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        iconTheme: Theme.of(context)
-            .iconTheme
-            .copyWith(color: Theme.of(context).primaryColor),
         title: Text(
           "Address",
-          style: TextStyle(color: Theme.of(context).primaryColor),
         ),
       ),
       body: Column(
