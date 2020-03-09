@@ -4,6 +4,7 @@
 
 import 'dart:convert';
 
+import 'package:eggate/services/magento.dart';
 import 'package:localstorage/localstorage.dart';
 
 class User {
@@ -14,7 +15,7 @@ class User {
   DateTime createdAt;
   DateTime updatedAt;
   String createdIn;
-
+  String dob;
   String email;
   String firstname;
   String lastname;
@@ -33,6 +34,7 @@ class User {
     this.createdAt,
     this.updatedAt,
     this.createdIn,
+    this.dob,
     this.email,
     this.firstname,
     this.lastname,
@@ -49,13 +51,14 @@ class User {
   String toJson() => json.encode(toMap());
 
   factory User.fromMap(Map<String, dynamic> json) => User(
-        id: json["id"],
+    id: json["id"],
         groupId: json["group_id"],
         defaultBilling: json["default_billing"],
         defaultShipping: json["default_shipping"],
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
         createdIn: json["created_in"],
+        dob: json["dob"],
         email: json["email"],
         firstname: json["firstname"],
         lastname: json["lastname"],
@@ -69,7 +72,8 @@ class User {
             ExtensionAttributes.fromMap(json["extension_attributes"]),
       );
 
-  Map<String, dynamic> toMap() => {
+  Map<String, dynamic> toMap() =>
+      {
         "id": id,
         "group_id": groupId,
         "default_billing": defaultBilling,
@@ -77,6 +81,7 @@ class User {
         "created_at": createdAt.toIso8601String(),
         "updated_at": updatedAt.toIso8601String(),
         "created_in": createdIn,
+        "dob": dob,
         "email": email,
         "firstname": firstname,
         "lastname": lastname,
@@ -94,6 +99,7 @@ class User {
       if (ready) {
         await storage.setItem("user", user.toJson());
         print("Basem Saved to local store");
+        await MagentoApi().updateUser(user: user);
       }
     } catch (err) {
       print(err);
@@ -130,8 +136,8 @@ class Address {
   String city;
   String firstname;
   String lastname;
-  bool defaultShipping;
-  bool defaultBilling;
+  int defaultShipping;
+  int defaultBilling;
 
   Address({
     this.id,
@@ -155,18 +161,22 @@ class Address {
 
   factory Address.fromMap(Map<String, dynamic> json) => Address(
         id: json["id"],
-        customerId: json["customer_id"],
-        region: Region.fromMap(json["region"]),
-        regionId: json["region_id"],
-        countryId: json["country_id"],
-        street: List<String>.from(json["street"].map((x) => x)),
-        telephone: json["telephone"],
-        postcode: json["postcode"],
-        city: json["city"],
-        firstname: json["firstname"],
-        lastname: json["lastname"],
-        defaultShipping: json["default_shipping"],
-        defaultBilling: json["default_billing"],
+    customerId: json["customer_id"],
+    region: Region.fromMap(json["region"]),
+    regionId: json["region_id"],
+    countryId: json["country_id"],
+    street: List<String>.from(json["street"].map((x) => x)),
+    telephone: json["telephone"],
+    postcode: json["postcode"],
+    city: json["city"],
+    firstname: json["firstname"],
+    lastname: json["lastname"],
+    defaultShipping: (json["default_shipping"] is bool)
+        ? (json["default_shipping"] as bool) == true ? 1 : 0
+        : json["default_shipping"],
+    defaultBilling: (json["default_billing"] is bool)
+        ? (json["default_billing"] as bool) == true ? 1 : 0
+        : json["default_billing"],
       );
 
   Map<String, dynamic> toMap() => {

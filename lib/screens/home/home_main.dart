@@ -3,6 +3,7 @@ import 'package:eggate/models/banner.dart';
 import 'package:eggate/models/product.dart';
 import 'package:eggate/screens/ProductGridView.dart';
 import 'package:eggate/services/magento.dart';
+import 'package:eggate/widgets/loading_widget.dart';
 import 'package:eggate/widgets/product_card.dart';
 import 'package:flutter/material.dart';
 
@@ -37,7 +38,6 @@ class _HomeMainState extends State<HomeMain> {
             enableInfiniteScroll: true,
             enlargeCenterPage: true,
             autoPlay: true,
-            aspectRatio: 16 / 9,
             pauseAutoPlayOnTouch: Duration(seconds: 5),
             autoPlayAnimationDuration: Duration(seconds: 2),
             autoPlayInterval: Duration(seconds: 5),
@@ -63,11 +63,11 @@ class _HomeMainState extends State<HomeMain> {
                       borderRadius: BorderRadius.circular(5)),
                   child: snapshot.hasData
                       ? Image.network(
-                          (snapshot.data as List<AppBanner>)[i].image,
-                          fit: BoxFit.cover,
+                    (snapshot.data as List<AppBanner>)[i].image,
+                          fit: BoxFit.fitWidth,
                         )
                       : Center(
-                          child: CircularProgressIndicator(),
+                    child: LoadingWidget(),
                         ),
                 ),
               ),
@@ -107,7 +107,7 @@ class _HomeMainState extends State<HomeMain> {
                         : Container(
                             height: 180,
                             child: Center(
-                              child: CircularProgressIndicator(),
+                              child: LoadingWidget(),
                             )),
                   ),
                   Padding(
@@ -141,7 +141,7 @@ class _HomeMainState extends State<HomeMain> {
                                 : Container(
                                     height: 120,
                                     child: Center(
-                                      child: CircularProgressIndicator(),
+                                      child: LoadingWidget(),
                                     )),
                           ),
                         ),
@@ -169,7 +169,7 @@ class _HomeMainState extends State<HomeMain> {
                                 : Container(
                                     height: 120,
                                     child: Center(
-                                      child: CircularProgressIndicator(),
+                                      child: LoadingWidget(),
                                     )),
                           ),
                         ),

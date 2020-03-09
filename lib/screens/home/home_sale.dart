@@ -1,5 +1,6 @@
 import 'package:eggate/models/product.dart';
 import 'package:eggate/services/magento.dart';
+import 'package:eggate/widgets/loading_widget.dart';
 import 'package:eggate/widgets/product_card.dart';
 import 'package:flutter/material.dart';
 
@@ -27,6 +28,7 @@ class _HomeSalesState extends State<HomeSale> {
       orderBy: "price",
     )
         .then((newData) {
+      if (!mounted) return;
       setState(() {
         _products.addAll(newData);
         print("Basem product count is ${_products.length}");
@@ -38,7 +40,7 @@ class _HomeSalesState extends State<HomeSale> {
   Widget build(BuildContext context) {
     return _products.isEmpty
         ? Center(
-            child: CircularProgressIndicator(),
+      child: LoadingWidget(),
           )
         : NotificationListener<ScrollNotification>(
             onNotification: (ScrollNotification sn) {

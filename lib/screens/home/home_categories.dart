@@ -1,6 +1,7 @@
 import 'package:eggate/models/category.dart';
 import 'package:eggate/screens/ProductGridView.dart';
 import 'package:eggate/services/magento.dart';
+import 'package:eggate/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 
 class HomeCategories extends StatefulWidget {
@@ -18,7 +19,7 @@ class _HomeCategoriesState extends State<HomeCategories> {
       builder: (BuildContext context, AsyncSnapshot snapshot) => !snapshot
               .hasData
           ? Center(
-              child: CircularProgressIndicator(),
+        child: LoadingWidget(),
             )
           : ListView.builder(
               itemCount: snapshot.data.length,

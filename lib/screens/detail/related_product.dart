@@ -1,6 +1,7 @@
 import 'package:async/async.dart';
 import 'package:eggate/models/product.dart';
 import 'package:eggate/services/magento.dart';
+import 'package:eggate/widgets/loading_widget.dart';
 import 'package:eggate/widgets/product_card.dart';
 import 'package:flutter/material.dart';
 
@@ -41,7 +42,7 @@ class RelatedProduct extends StatelessWidget {
                 return Container(
                   height: 100,
                   child: Center(
-                    child: CircularProgressIndicator(),
+                    child: LoadingWidget(),
                   ),
                 );
               case ConnectionState.done:

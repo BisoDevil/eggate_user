@@ -30,6 +30,8 @@ dependencies:
   localstorage: 3.0.1+4
   intl: ^0.16.1
   flutter_fluid_slider: ^1.0.2
+  datetime_picker_formfield: ^1.0.0
+  flutter_webview_plugin: ^0.3.10+1
 
 
 

@@ -1,4 +1,5 @@
 import 'package:eggate/models/product.dart';
+import 'package:eggate/services/magento.dart';
 import 'package:flutter/material.dart';
 
 class ProductTitle extends StatelessWidget {
@@ -21,7 +22,8 @@ class ProductTitle extends StatelessWidget {
         SizedBox(height: 10),
         Row(
           children: <Widget>[
-            Text("${product.extensionAttributes.discountedPrice} EGP",
+            Text(
+                "${product.extensionAttributes.discountedPrice} ${MagentoApi.currency}",
                 style: Theme.of(context).textTheme.headline.copyWith(
                       fontSize: 22,
                       fontWeight: FontWeight.w300,
@@ -30,7 +32,7 @@ class ProductTitle extends StatelessWidget {
               Row(
                 children: <Widget>[
                   SizedBox(width: 5),
-                  Text("${product.price} EGP",
+                  Text("${product.price} ${MagentoApi.currency}",
                       style: Theme.of(context).textTheme.headline.copyWith(
                           fontSize: 16,
                           color: Theme.of(context).accentColor,

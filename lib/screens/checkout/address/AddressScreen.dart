@@ -29,11 +29,11 @@ class _AddressScreenState extends State<AddressScreen> {
 
   void selectAddress(Address item) {
     setState(() {
-      address.forEach((a) => a.defaultShipping = false);
-      item.defaultShipping = true;
+      address.forEach((a) => a.defaultShipping = 0);
+      item.defaultShipping = 1;
       selectedAddress = item;
       if (!widget.fromCheckOut) {
-        address.firstWhere((a) => a.id == item.id).defaultShipping = true;
+        address.firstWhere((a) => a.id == item.id).defaultShipping = 1;
         User().getUserLocal().then((u) {
           u.addresses = this.address;
           u.saveUserLocal(u);
@@ -46,15 +46,16 @@ class _AddressScreenState extends State<AddressScreen> {
   void initState() {
     super.initState();
     User().getUserLocal().then((u) {
+      print("Base local user ${u.toJson()}");
       setState(() {
         address = u.addresses;
-        selectedAddress = address.firstWhere((a) => a.defaultShipping == true);
+        selectedAddress = address.firstWhere((a) => a.defaultShipping == 1);
       });
     });
   }
 
   void removeAddress(Address item) {
-    if (item.defaultShipping) {
+    if (item.defaultShipping == 1) {
       _globalKey.currentState.showSnackBar(SnackBar(
         content: Text("You can't remove default shipping address"),
       ));
@@ -217,16 +218,18 @@ class _AddressWidgetState extends State<AddressWidget> {
               }
             },
           ),
-          leading: widget.address.defaultShipping
+          leading: widget.address.defaultShipping == 1
               ? Icon(
-                  Icons.check,
-                  size: 30,
-                  color: Theme.of(context).primaryColor,
-                )
+            Icons.check,
+            size: 30,
+            color: Theme
+                .of(context)
+                .primaryColor,
+          )
               : Container(
-                  width: 30,
-                  height: 30,
-                ),
+            width: 30,
+            height: 30,
+          ),
           onTap: () {
             widget.onClick();
           },

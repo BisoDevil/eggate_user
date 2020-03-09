@@ -4,12 +4,14 @@
 
 import 'dart:convert';
 
+import 'package:eggate/services/magento.dart';
+
 class Cart {
   int itemId;
   String sku;
   int qty;
   String name;
-  int price;
+  double price;
   String productType;
   String quoteId;
   ExtensionAttributes extensionAttributes;
@@ -30,11 +32,11 @@ class Cart {
   String toJson() => json.encode(toMap());
 
   factory Cart.fromMap(Map<String, dynamic> json) => Cart(
-        itemId: json["item_id"],
+    itemId: json["item_id"],
         sku: json["sku"],
         qty: json["qty"],
         name: json["name"],
-        price: json["price"],
+        price: json["price"] * MagentoApi.rate,
         productType: json["product_type"],
         quoteId: json["quote_id"],
         extensionAttributes:

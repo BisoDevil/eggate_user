@@ -1,4 +1,5 @@
 import 'package:eggate/services/magento.dart';
+import 'package:eggate/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -168,7 +169,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         onChanged: (String text) {
                           setState(() {
                             isMailValid = RegExp(
-                                r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$')
+                                    r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$')
                                 .hasMatch(_mail.text);
                           });
                         },
@@ -233,7 +234,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       SizedBox(
                         height: 35,
                       ),
-                      if (isLoading) CircularProgressIndicator()
+                      if (isLoading) LoadingWidget()
                     ],
                   )
                 ],

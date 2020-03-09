@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:eggate/services/magento.dart';
+
 class Product {
   String domain = "https://eggate.shop/";
   int id;
@@ -45,11 +47,11 @@ class Product {
 
   String toJson() => json.encode(toMap());
   factory Product.fromMap(Map<String, dynamic> json) => Product(
-        id: json["id"],
+    id: json["id"],
         sku: json["sku"],
         name: json["name"],
         attributeSetId: json["attribute_set_id"],
-        price: json["price"],
+        price: json["price"] != null ? json["price"] * MagentoApi.rate : null,
         status: json["status"],
         visibility: json["visibility"],
         typeId: json["type_id"],
@@ -124,10 +126,15 @@ class ExtensionAttributes {
 
   factory ExtensionAttributes.fromMap(Map<String, dynamic> json) =>
       ExtensionAttributes(
-          discountedPrice: json["discounted_price"],
-          discountPercentage: json["discount_percentage"]);
+          discountedPrice: json["discounted_price"] != null
+              ? json["discounted_price"] * MagentoApi.rate
+              : null,
+          discountPercentage: json["discount_percentage"] != null
+              ? json["discount_percentage"] * MagentoApi.rate
+              : null);
 
-  Map<String, dynamic> toMap() => {
+  Map<String, dynamic> toMap() =>
+      {
         "discounted_price": discountedPrice,
         "discount_percentage": discountPercentage
       };

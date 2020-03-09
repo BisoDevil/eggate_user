@@ -7,6 +7,8 @@ import 'package:eggate/services/magento.dart';
 import 'package:eggate/services/screen_animation.dart';
 import 'package:flutter/material.dart';
 
+import 'loading_widget.dart';
+
 class ProductCard extends StatefulWidget {
   final Product _product;
 
@@ -77,7 +79,7 @@ class _ProductCardState extends State<ProductCard> {
             elevation: 2,
             child: widget._product.id == null
                 ? Center(
-                    child: CircularProgressIndicator(),
+              child: LoadingWidget(),
                   )
                 : Column(
                     children: <Widget>[
@@ -141,7 +143,7 @@ class _ProductCardState extends State<ProductCard> {
                                 widget._product.extensionAttributes
                                     .discountedPrice)
                               Text(
-                                "${widget._product.price} EGP",
+                                "${widget._product.price} ${MagentoApi.currency}",
                                 style: Theme.of(context)
                                     .textTheme
                                     .body1
@@ -151,10 +153,15 @@ class _ProductCardState extends State<ProductCard> {
                                         decoration: TextDecoration.lineThrough),
                               ),
                             Text(
-                              "${widget._product.extensionAttributes.discountedPrice} EGP",
-                              style: Theme.of(context).textTheme.body1.copyWith(
-                                    fontSize: 14,
-                                  ),
+                              "${widget._product.extensionAttributes
+                                  .discountedPrice} ${MagentoApi.currency}",
+                              style: Theme
+                                  .of(context)
+                                  .textTheme
+                                  .body1
+                                  .copyWith(
+                                fontSize: 14,
+                              ),
                             )
                           ],
                         ),

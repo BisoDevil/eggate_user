@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:eggate/services/magento.dart';
+
 class OrderModel {
   List<PaymentMethod> paymentMethods;
   Totals totals;
@@ -112,16 +114,16 @@ class Totals {
   String toJson() => json.encode(toMap());
 
   factory Totals.fromMap(Map<String, dynamic> json) => Totals(
-        grandTotal: json["grand_total"].toDouble(),
+    grandTotal: json["grand_total"].toDouble() * MagentoApi.rate,
         baseGrandTotal: json["base_grand_total"].toDouble(),
-        subtotal: json["subtotal"].toDouble(),
+        subtotal: json["subtotal"].toDouble() * MagentoApi.rate,
         baseSubtotal: json["base_subtotal"].toDouble(),
         discountAmount: json["discount_amount"],
         baseDiscountAmount: json["base_discount_amount"],
         subtotalWithDiscount: json["subtotal_with_discount"].toDouble(),
         baseSubtotalWithDiscount:
             json["base_subtotal_with_discount"].toDouble(),
-        shippingAmount: json["shipping_amount"].toDouble(),
+        shippingAmount: json["shipping_amount"].toDouble() * MagentoApi.rate,
         baseShippingAmount: json["base_shipping_amount"].toDouble(),
         shippingDiscountAmount: json["shipping_discount_amount"],
         baseShippingDiscountAmount: json["base_shipping_discount_amount"],

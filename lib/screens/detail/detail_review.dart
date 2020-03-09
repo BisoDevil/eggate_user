@@ -1,14 +1,16 @@
+import 'package:async/async.dart';
 import 'package:eggate/models/product.dart';
 import 'package:eggate/models/reivew.dart';
 import 'package:eggate/services/magento.dart';
 import 'package:eggate/widgets/ExpansionInfo.dart';
-import 'package:intl/intl.dart';
+import 'package:eggate/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:async/async.dart';
+import 'package:intl/intl.dart';
 
 class ProductReview extends StatelessWidget {
   final Product product;
   final _memoizer = AsyncMemoizer<List<Review>>();
+
   ProductReview(this.product);
 
   @override
@@ -32,7 +34,7 @@ class ProductReview extends StatelessWidget {
                 return Container(
                   height: 100,
                   child: Center(
-                    child: CircularProgressIndicator(),
+                    child: LoadingWidget(),
                   ),
                 );
               case ConnectionState.done:
@@ -60,9 +62,9 @@ class ProductReview extends StatelessWidget {
                           trailing: Text(
                             DateFormat("MMM d yyyy").format(item.createdAt),
                             style:
-                                Theme.of(context).textTheme.subtitle.copyWith(
-                                      fontSize: 10,
-                                    ),
+                            Theme.of(context).textTheme.subtitle.copyWith(
+                              fontSize: 10,
+                            ),
                           ),
                           isThreeLine: true,
                         )

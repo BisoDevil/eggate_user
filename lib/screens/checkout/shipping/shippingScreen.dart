@@ -5,8 +5,11 @@ import 'package:eggate/models/user.dart';
 import 'package:eggate/screens/checkout/orderConfirmation.dart';
 import 'package:eggate/services/magento.dart';
 import 'package:eggate/services/screen_animation.dart';
+import 'package:eggate/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+import '../PayWebView.dart';
 
 class OrderReview extends StatefulWidget {
   final ShippingMethod shippingMethod;
@@ -57,9 +60,22 @@ class _OrderReviewState extends State<OrderReview> {
         .createOrder(methodName: method, address: widget.address)
         .then((value) {
       if (value != null) {
-        gotoSuccess(orderId: value);
+        if (value is List) {
+          print("Basem values is $value");
+          String session = value[0].toString();
+          String id = value[1].toString();
+          Navigator.of(context).push(
+            MyCustomRoute(
+              builder: (q, w, e) => PayWebView(
+                session: session,
+                id: id,
+              ),
+            ),
+          );
+        } else {
+          gotoSuccess(orderId: value);
+        }
       }
-      print("Basem values from order screen");
     });
   }
 
@@ -90,7 +106,7 @@ class _OrderReviewState extends State<OrderReview> {
           Expanded(
             child: _orderModel == null
                 ? Center(
-              child: CircularProgressIndicator(),
+              child: LoadingWidget(),
             )
                 : Padding(
               padding: const EdgeInsets.all(8.0),
@@ -179,7 +195,8 @@ class _OrderReviewState extends State<OrderReview> {
                               "Subtotal",
                             ),
                             trailing: Text(
-                              "EGP ${_orderModel.totals.subtotal}",
+                              "${MagentoApi.currency} ${_orderModel.totals
+                                  .subtotal}",
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),
@@ -191,7 +208,8 @@ class _OrderReviewState extends State<OrderReview> {
                               "Shipping Fee",
                             ),
                             trailing: Text(
-                              "EGP ${_orderModel.totals.shippingAmount}",
+                              "${MagentoApi.currency} ${_orderModel.totals
+                                  .shippingAmount}",
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),
@@ -209,7 +227,8 @@ class _OrderReviewState extends State<OrderReview> {
                               TextStyle(fontWeight: FontWeight.bold),
                             ),
                             trailing: Text(
-                              "EGP ${_orderModel.totals.grandTotal}",
+                              "${MagentoApi.currency} ${_orderModel.totals
+                                  .grandTotal}",
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),
@@ -234,7 +253,8 @@ class _OrderReviewState extends State<OrderReview> {
                       child: ListTile(
                         dense: true,
                         title: Text(
-                          "${widget.address.firstname} ${widget.address.lastname}",
+                          "${widget.address.firstname} ${widget.address
+                              .lastname}",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
@@ -312,7 +332,8 @@ class _OrderReviewState extends State<OrderReview> {
                                         Row(
                                           children: <Widget>[
                                             Text(
-                                              "${item.price} EGP",
+                                              "${item.price} ${MagentoApi
+                                                  .currency}",
                                               style: TextStyle(
                                                 fontWeight:
                                                 FontWeight.bold,

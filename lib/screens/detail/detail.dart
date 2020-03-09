@@ -61,24 +61,17 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             child: Carousel(
               images: List.generate(
                 widget._product.mediaGalleryEntries.length,
-                    (i) =>
-                    Image.network(
-                      widget._product.mediaGalleryEntries[i].file,
-                      fit: BoxFit.cover,
-                    ),
+                (i) => Image.network(
+                  widget._product.mediaGalleryEntries[i].file,
+                  fit: BoxFit.cover,
+                ),
               ),
               autoplay: false,
               dotSize: 5.0,
               dotSpacing: 15.0,
-              dotColor: Theme
-                  .of(context)
-                  .backgroundColor
-                  .withOpacity(0.7),
+              dotColor: Theme.of(context).backgroundColor.withOpacity(0.7),
               dotIncreasedColor:
-              Theme
-                  .of(context)
-                  .primaryColor
-                  .withOpacity(0.9),
+                  Theme.of(context).primaryColor.withOpacity(0.9),
               indicatorBgPadding: 5.0,
               dotBgColor: Colors.transparent,
             ),

@@ -1,5 +1,6 @@
 import 'package:eggate/models/product.dart';
 import 'package:eggate/services/magento.dart';
+import 'package:eggate/widgets/loading_widget.dart';
 import 'package:eggate/widgets/product_card.dart';
 import 'package:flutter/material.dart';
 
@@ -15,9 +16,13 @@ class _SearchScreenState extends State<SearchScreen> {
   List<Product> products = [];
 
   void _search() {
+    if (searchWord.length < 3) {
+      return;
+    }
     setState(() {
       isSearching = true;
     });
+
     MagentoApi()
         .searchProducts(name: searchWord, page: _currentPage)
         .then((values) {
@@ -55,6 +60,9 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
                 onChanged: (values) {
                   searchWord = values;
+                  setState(() {
+                    products.clear();
+                  });
                   _search();
                 },
               ),
@@ -64,7 +72,7 @@ class _SearchScreenState extends State<SearchScreen> {
       ),
       body: isSearching
           ? Center(
-              child: CircularProgressIndicator(),
+        child: LoadingWidget(),
             )
           : products.isEmpty
               ? Container()

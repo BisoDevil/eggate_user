@@ -1,4 +1,5 @@
 import 'package:eggate/screens/OnBoardingScreen.dart';
+import 'package:eggate/services/magento.dart';
 import 'package:eggate/strings/lanaguage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -14,6 +15,12 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _Splash extends State<SplashScreen> {
+  @override
+  void initState() {
+    MagentoApi().getStoreConfig();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     Future.delayed(Duration(seconds: 3), () async {

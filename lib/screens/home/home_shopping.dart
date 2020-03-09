@@ -42,32 +42,37 @@ class _HomeShoppingState extends State<HomeShopping> {
 
   @override
   void initState() {
-    getItemFromCart();
     super.initState();
+    getItemFromCart();
   }
 
   void getItemFromCart() {
     MagentoApi().getCartItems().then((items) {
-      if (items != null)
-        setState(() {
-          carts = items;
-          print("Carts count is ${carts.length}");
-        });
+      if (items != null) if (!mounted) return;
+      setState(() {
+        carts = items;
+        print("Carts count is ${carts.length}");
+      });
     });
   }
 
   void deleteItemFromCart({int id}) {
+    showDialog(context: context, builder: (w) => LoadingWidget());
+
     MagentoApi().deleteFromCart(itemId: id).then((value) {
       if (value != null && value == true) {
         setState(() {
           getItemFromCart();
           HomeScreen.of(context).refreshScreen();
+//          Navigator.of(context).pop();
+          Navigator.of(context, rootNavigator: true).pop('dialog');
         });
       }
     });
   }
 
   void updateItemQuantity({int idx, bool adding}) {
+    showDialog(context: context, builder: (w) => LoadingWidget());
     var oldQty = carts[idx].qty;
     carts[idx].qty = adding ? ++carts[idx].qty : --carts[idx].qty;
     MagentoApi().updateItemFromCart(cart: carts[idx]).catchError((err) {
@@ -77,11 +82,13 @@ class _HomeShoppingState extends State<HomeShopping> {
       _drawerKey.currentState.showSnackBar(SnackBar(
         content: Text(err.toString()),
       ));
+      Navigator.of(context, rootNavigator: true).pop('dialog');
     }).then((value) {
       if (value != null) {
         setState(() {
           getItemFromCart();
           HomeScreen.of(context).refreshScreen();
+          Navigator.of(context, rootNavigator: true).pop('dialog');
         });
       }
     });
@@ -95,167 +102,150 @@ class _HomeShoppingState extends State<HomeShopping> {
       body: carts == null
           ? LoadingWidget()
           : carts.length > 0
-          ? Column(
-        children: <Widget>[
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: <Widget>[
-                  SizedBox(
-                    height: 20,
-                  ),
-                  for (var i = 0; i < carts.length; i++)
-                    Container(
-                      height: 145,
-                      child: Card(
-                        child: ListTile(
-                            isThreeLine: true,
-                            leading: Stack(
-                              children: <Widget>[
-                                Image.network(
-                                  carts[i].extensionAttributes.image,
-                                  height: 120,
-                                  width: 100,
-                                  fit: BoxFit.fitHeight,
-                                ),
-                              ],
+              ? Column(
+                  children: <Widget>[
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: <Widget>[
+                            SizedBox(
+                              height: 20,
                             ),
-                            title: Text(
-                              carts[i].name,
-                              maxLines: 3,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            trailing: FloatingActionButton(
-                              heroTag: carts[i].itemId,
-                              onPressed: () {
-                                deleteItemFromCart(
-                                    id: carts[i].itemId);
-                              },
-                              mini: true,
-                              backgroundColor:
-                              Theme
-                                  .of(context)
-                                  .primaryColor,
-                              child: Icon(Icons.delete),
-                            ),
-                            subtitle: Column(
-                              children: <Widget>[
-                                Row(
-                                  children: <Widget>[
-                                    Text(
-                                      "QTY:",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
+                            for (var i = 0; i < carts.length; i++)
+                              Container(
+                                height: 145,
+                                child: Card(
+                                  child: ListTile(
+                                      isThreeLine: true,
+                                      leading: Stack(
+                                        children: <Widget>[
+                                          Image.network(
+                                            carts[i].extensionAttributes.image,
+                                            height: 120,
+                                            width: 100,
+                                            fit: BoxFit.fitHeight,
+                                          ),
+                                        ],
                                       ),
-                                    ),
-                                    IconButton(
-                                      iconSize: 22,
-                                      onPressed: () {
-                                        setState(() {
-                                          updateItemQuantity(
-                                              idx: i, adding: false);
-                                        });
-                                      },
-                                      icon: Icon(Icons
-                                          .remove_circle_outline),
-                                    ),
-                                    Container(
-                                      width: 10,
-                                      child: Text(
-                                        carts[i].qty.toString(),
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                        ),
+                                      title: Text(
+                                        carts[i].name,
+                                        maxLines: 3,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
-                                    ),
-                                    IconButton(
-                                      iconSize: 22,
-                                      onPressed: () {
-                                        setState(() {
-                                          updateItemQuantity(
-                                              idx: i, adding: true);
-                                        });
-                                      },
-                                      icon: Icon(
-                                          Icons.add_circle_outline),
-                                    ),
-                                  ],
+                                      trailing: FlatButton.icon(
+                                          materialTapTargetSize:
+                                              MaterialTapTargetSize.padded,
+                                          onPressed: () {
+                                            deleteItemFromCart(
+                                                id: carts[i].itemId);
+                                          },
+                                          icon: Icon(Icons.delete_outline),
+                                          label: Text(
+                                            "remove".toUpperCase(),
+                                            style: TextStyle(fontSize: 9),
+                                          )),
+                                      subtitle: Column(
+                                        children: <Widget>[
+                                          Row(
+                                            children: <Widget>[
+                                              Text(
+                                                "QTY:",
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              IconButton(
+                                                iconSize: 22,
+                                                onPressed: () {
+                                                  setState(() {
+                                                    updateItemQuantity(
+                                                        idx: i, adding: false);
+                                                  });
+                                                },
+                                                icon: Icon(Icons
+                                                    .remove_circle_outline),
+                                              ),
+                                              Container(
+                                                width: 10,
+                                                child: Text(
+                                                  carts[i].qty.toString(),
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                    fontSize: 15,
+                                                  ),
+                                                ),
+                                              ),
+                                              IconButton(
+                                                iconSize: 22,
+                                                onPressed: () {
+                                                  setState(() {
+                                                    updateItemQuantity(
+                                                        idx: i, adding: true);
+                                                  });
+                                                },
+                                                icon: Icon(
+                                                    Icons.add_circle_outline),
+                                              ),
+                                            ],
+                                          ),
+                                          Row(
+                                            children: <Widget>[
+                                              Text(
+                                                "${carts[i].price} ${MagentoApi.currency}",
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 14,
+                                                    color: Colors.black),
+                                              ),
+                                            ],
+                                          )
+                                        ],
+                                      )),
                                 ),
-                                Row(
-                                  children: <Widget>[
-                                    Text(
-                                      "${carts[i].price} EGP",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 14,
-                                          color: Colors.black),
-                                    ),
-                                  ],
-                                )
-                              ],
-                            )),
+                              ),
+                          ],
+                        ),
                       ),
                     ),
-                ],
-              ),
-            ),
-          ),
-          MaterialButton(
-            child: Text(
-              "Checkout".toUpperCase(),
-              style: TextStyle(
-                color: Colors.white,
-              ),
-            ),
-            minWidth: MediaQuery
-                .of(context)
-                .size
-                .width,
-            height: 55,
-            color: Theme
-                .of(context)
-                .primaryColor,
-            onPressed: () {
-              goToCheckOut();
-            },
-          )
-        ],
-      )
-          : Padding(
-        child: Column(
-          children: <Widget>[
-            EmptyCart(),
-            MaterialButton(
-              minWidth: MediaQuery
-                  .of(context)
-                  .size
-                  .width * .8,
-              color: Theme
-                  .of(context)
-                  .primaryColor,
-              onPressed: () {
-                HomeScreen
-                    .of(context)
-                    .tabController
-                    .animateTo(0);
-              },
-              child: Text(
-                "Start Shopping".toUpperCase(),
-                style: TextStyle(
-                  color: Colors.white,
+                    MaterialButton(
+                      child: Text(
+                        "Checkout".toUpperCase(),
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
+                      minWidth: MediaQuery.of(context).size.width,
+                      height: 55,
+                      color: Theme.of(context).primaryColor,
+                      onPressed: () {
+                        goToCheckOut();
+                      },
+                    )
+                  ],
+                )
+              : Padding(
+                  child: Column(
+                    children: <Widget>[
+                      EmptyCart(),
+                      MaterialButton(
+                        minWidth: MediaQuery.of(context).size.width * .8,
+                        color: Theme.of(context).primaryColor,
+                        onPressed: () {
+                          HomeScreen.of(context).tabController.animateTo(0);
+                        },
+                        child: Text(
+                          "Start Shopping".toUpperCase(),
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  padding: EdgeInsets.only(
+                    top: MediaQuery.of(context).size.height * 0.20,
+                  ),
                 ),
-              ),
-            )
-          ],
-        ),
-        padding: EdgeInsets.only(
-          top: MediaQuery
-              .of(context)
-              .size
-              .height * 0.20,
-        ),
-      ),
     );
   }
 }

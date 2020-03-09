@@ -9,6 +9,7 @@ import 'package:eggate/models/orderModel.dart';
 import 'package:eggate/models/product.dart';
 import 'package:eggate/models/reivew.dart';
 import 'package:eggate/models/shippingMethod.dart';
+import 'package:eggate/models/store_config.dart';
 import 'package:eggate/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -29,6 +30,49 @@ class MagentoApi {
   String locale = "default";
   String storeCode;
   String cookie;
+  static double rate = 1;
+  static String currency = "EGP";
+  String fuckingCookies;
+
+  Future<StoreConfig> getStoreConfig() async {
+    //rest/all/V1/directory/currency
+    var response = await http.get("$domain/rest/all/V1/directory/currency",
+        headers: {'Authorization': 'Bearer ' + accessToken});
+    var body = convert.jsonDecode(response.body);
+    print("Basem store $body");
+    if (response.statusCode == 200) {
+      String currency = await getCurrency();
+      StoreConfig storeConfig = StoreConfig.fromMap(body);
+      MagentoApi.rate = storeConfig.exchangeRates
+          .firstWhere((r) => r.currencyTo == currency)
+          .rate;
+      MagentoApi.currency = currency;
+      final LocalStorage storage = new LocalStorage("eggate");
+      final ready = await storage.ready;
+      if (ready) {
+        await storage.setItem("currency", storeConfig.toJson());
+      }
+      return storeConfig;
+    } else {
+      return throw Exception("error geting store config");
+    }
+  }
+
+  Future<StoreConfig> getStoreConfigLocal() async {
+    final LocalStorage storage = new LocalStorage("eggate");
+    final ready = await storage.ready;
+    if (ready) {
+      var json = await storage.getItem("currency");
+      return StoreConfig.fromJson(json);
+    }
+    return throw Exception("");
+  }
+
+  Future<String> getCurrency() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    String currency = sharedPreferences.getString("currency") ?? "EGP";
+    return currency;
+  }
 
   // Map<String, ProductAttribute> attributes;
 
@@ -58,6 +102,7 @@ class MagentoApi {
   Future<bool> getCookie() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     cookie = sharedPreferences.getString("cookie") ?? "";
+    fuckingCookies = sharedPreferences.getString("fuckingCookies") ?? "";
     return true;
   }
 
@@ -92,6 +137,7 @@ class MagentoApi {
       List<Product> list = [];
       for (var item in items) {
         Product product = Product.fromMap(item);
+
         if (product.price > 1) {
           list.add(product);
         }
@@ -350,7 +396,43 @@ class MagentoApi {
     String cookie = convert.jsonDecode(response.body);
     SharedPreferences shared = await SharedPreferences.getInstance();
     shared.setString("cookie", cookie);
+    fuckingCookies = _extractResponseCookies(response.headers);
+    shared.setString("fuckingCookies", fuckingCookies);
+
     return getUserInfo(cookie);
+  }
+
+  Set _cookiesKeysToIgnore = Set.from([
+    "SameSite",
+    "path",
+    "domain",
+    "Max-Age",
+    "Expires",
+    "Secure",
+    "HttpOnly",
+    "expires",
+    "form_key"
+  ]);
+
+  String _extractResponseCookies(responseHeaders) {
+    Map<String, String> cookies = {};
+    for (var key in responseHeaders.keys) {
+      if ((key == 'set-cookie' || key == 'Set-cookie')) {
+        String cookie = responseHeaders[key];
+        cookie.split(",").forEach((String one) {
+          one
+              .split(";")
+              .map((x) => x.trim().split("="))
+              .where((x) => x.length == 2)
+              .where((x) => !_cookiesKeysToIgnore.contains(x[0]))
+              .forEach((x) => cookies[x[0]] = x[1]);
+        });
+        break;
+      }
+    }
+    String cookie =
+        cookies.keys.map((key) => "$key=${cookies[key]}").join("; ");
+    return cookie;
   }
 
   Future<User> getUserInfo(token) async {
@@ -392,10 +474,27 @@ class MagentoApi {
     }
   }
 
+  Future<User> updateUser({User user}) async {
+    await getCookie();
+    var response = await http.put("$domain/rest/default/V1/customers/me",
+        body: convert.jsonEncode({"customer": user.toMap()}),
+        headers: {
+          "content-type": "application/json",
+          'Authorization': 'Bearer ' + cookie,
+        });
+    var body = convert.jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      return User.fromMap(body);
+    } else {
+      throw Exception("Error updating user $body");
+    }
+  }
+
 // order processing
   Future<bool> addToCart({@required Product product}) async {
     String qoute = await createQuote();
-
+    await getCookie();
     print("Basem qoute from cart $qoute");
 
     try {
@@ -546,7 +645,7 @@ class MagentoApi {
     return throw Exception(response.body);
   }
 
-  Future<int> createOrder({String methodName, Address address}) async {
+  Future<dynamic> createOrder({String methodName, Address address}) async {
     await getCookie();
 
     var requestBody = convert.jsonEncode(
@@ -569,20 +668,28 @@ class MagentoApi {
 
     print("Basem request body $requestBody");
 
-    var response = await http.post(
-        "$domain/rest/default/V1/carts/mine/payment-information",
-        headers: {
-          "content-type": "application/json",
-          'Authorization': 'Bearer ' + cookie,
-        },
-        body: requestBody);
-    var body = convert.jsonDecode(response.body);
-    print("Basem $body");
-    if (response.statusCode == 200) {
-      print("BAsem created order $body");
+    if (methodName == "tns_hosted") {
+      var response = await http.post("$domain/rest/V1/tns/hc/session/create",
+          headers: {
+            "content-type": "application/json",
+            'Authorization': 'Bearer ' + cookie,
+            'Cookie': fuckingCookies
+          },
+          body: requestBody);
+      print("Basem fucking $fuckingCookies");
+      var body = convert.jsonDecode(response.body);
+      print("Order error ${response.body}");
       return body;
     } else {
-      return throw Exception("$body");
+      var response = await http.post(
+          "$domain/rest/default/V1/carts/mine/payment-information",
+          headers: {
+            "content-type": "application/json",
+            'Authorization': 'Bearer ' + cookie,
+          },
+          body: requestBody);
+      var body = convert.jsonDecode(response.body);
+      return body;
     }
   }
 
@@ -598,6 +705,7 @@ class MagentoApi {
       }
       endPoint += "&searchCriteria[pageSize]=10";
 
+      print("endpoint $endPoint");
       var response = await http.get("$domain/rest/$locale/V1/products$endPoint",
           headers: {'Authorization': 'Bearer ' + accessToken});
 

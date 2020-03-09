@@ -71,22 +71,22 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
           street: [_street.text],
           postcode: _postcode.text,
           city: _city.text,
-          defaultBilling: _defaultBilling,
+          defaultBilling: _defaultBilling ? 1 : 0,
           customerId: u.id,
           region: Region(
               regionId: int.parse(reg.id),
               region: reg.name,
               regionCode: reg.code),
-          defaultShipping: _defaultShipping);
+          defaultShipping: _defaultShipping ? 1 : 0);
 
       if (_defaultShipping) {
         u.addresses.forEach((a) {
-          a.defaultShipping = false;
+          a.defaultShipping = 0;
         });
       }
       if (_defaultBilling) {
         u.addresses.forEach((a) {
-          a.defaultBilling = false;
+          a.defaultBilling = 0;
         });
       }
 

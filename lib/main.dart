@@ -23,6 +23,7 @@ class MyApp extends StatelessWidget {
 
       theme: ThemeData(
         primaryColor: Color(0xffb69876),
+        scaffoldBackgroundColor: Colors.white,
       ),
 //      home: OrderConfirmation(
 //        orderId: 2,

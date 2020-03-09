@@ -1,13 +1,19 @@
 import 'package:eggate/models/user.dart';
 import 'package:eggate/screens/checkout/address/AddressScreen.dart';
+import 'package:eggate/screens/currencies.dart';
 import 'package:eggate/screens/login/Login.dart';
+import 'package:eggate/screens/update_user.dart';
+import 'package:eggate/screens/wish_list.dart';
 import 'package:eggate/services/screen_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class HomeProfile extends StatefulWidget {
   User user;
-  HomeProfile();
+
+  static _HomeProfileState of(BuildContext context) =>
+      context.findAncestorStateOfType();
+
   @override
   State<StatefulWidget> createState() => _HomeProfileState();
 }
@@ -15,16 +21,22 @@ class HomeProfile extends StatefulWidget {
 class _HomeProfileState extends State<HomeProfile> {
   @override
   void initState() {
-    User().getUserLocal().then((usr) {
-      setState(() {
-        widget.user = usr;
-      });
-    });
+    loadUser();
 
     super.initState();
   }
 
+  void loadUser() {
+    User().getUserLocal().then((usr) {
+      if (!mounted) return;
+      setState(() {
+        widget.user = usr;
+      });
+    });
+  }
+
   var wishListCount = 6;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,7 +71,10 @@ class _HomeProfileState extends State<HomeProfile> {
                   Icons.arrow_forward_ios,
                   size: 18,
                 ),
-                onTap: () {},
+                onTap: () {
+                  Navigator.of(context).push(
+                      MyCustomRoute(builder: (q, w, e) => UpdateUserScreen()));
+                },
               ),
             ),
           if (widget.user == null)
@@ -130,7 +145,8 @@ class _HomeProfileState extends State<HomeProfile> {
                 Icon(Icons.arrow_forward_ios, size: 18)
               ]),
               onTap: () {
-                // Navigator.pushNamed(context, "/wishlist");
+                Navigator.of(context)
+                    .push(MyCustomRoute(builder: (q, w, e) => WishList()));
               },
             ),
           ),
@@ -168,44 +184,42 @@ class _HomeProfileState extends State<HomeProfile> {
             indent: 75,
             //endIndent: 20,
           ),
-          Card(
-            margin: EdgeInsets.only(bottom: 2.0),
-            elevation: 0,
-            child: GestureDetector(
-              onTap: () {
-                // Navigator.push(
-                //     context,
-                //     MaterialPageRoute(
-                //         builder: (context) => Language()));
-              },
-              child: ListTile(
-                leading: Icon(
-                  Icons.language,
-                  size: 24,
-                ),
-                title: Text("Language"),
-                trailing: Icon(
-                  Icons.arrow_forward_ios,
-                  size: 18,
-                ),
-              ),
-            ),
-          ),
-          Divider(
-            color: Colors.black12,
-            height: 1.0,
-            indent: 75,
-            //endIndent: 20,
-          ),
+//          Card(
+//            margin: EdgeInsets.only(bottom: 2.0),
+//            elevation: 0,
+//            child: GestureDetector(
+//              onTap: () {
+//                // Navigator.push(
+//                //     context,
+//                //     MaterialPageRoute(
+//                //         builder: (context) => Language()));
+//              },
+//              child: ListTile(
+//                leading: Icon(
+//                  Icons.language,
+//                  size: 24,
+//                ),
+//                title: Text("Language"),
+//                trailing: Icon(
+//                  Icons.arrow_forward_ios,
+//                  size: 18,
+//                ),
+//              ),
+//            ),
+//          ),
+//          Divider(
+//            color: Colors.black12,
+//            height: 1.0,
+//            indent: 75,
+//            //endIndent: 20,
+//          ),
           Card(
             margin: EdgeInsets.only(bottom: 2.0),
             elevation: 0,
             child: ListTile(
               onTap: () {
-                // Navigator.push(
-                //     context,
-                //     MaterialPageRoute(
-                //         builder: (context) => Currencies()));
+                Navigator.of(context)
+                    .push(MyCustomRoute(builder: (q, w, e) => Currencies()));
               },
               leading: Icon(FontAwesomeIcons.dollarSign, size: 22),
               title: Text("Currencies", style: TextStyle(fontSize: 16)),
