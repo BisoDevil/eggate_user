@@ -53,93 +53,93 @@ class _LoginScreenState extends State<LoginScreen> {
         children: <Widget>[
           Center(
               child: Container(
-                child: Wrap(
-                  children: <Widget>[
-                    Form(
-                      key: _formKey,
-                      child: Container(
-                        width: MediaQuery.of(context).size.width * 0.8,
-                        child: Column(
-                          children: <Widget>[
-                            Image.asset(
-                              "assets/images/logo.png",
-                              fit: BoxFit.fitWidth,
-                              height: 130,
-                            ),
-                            SizedBox(
-                              height: 60,
-                            ),
-                            TextFormField(
-                              textInputAction: TextInputAction.next,
-                              decoration: InputDecoration(
-                                labelText: "E-Mail",
-                                icon: Icon(Icons.mail),
-                                suffixIcon: isMail == null
-                                    ? Container(
-                                  width: 24,
-                                )
-                                    : isMail
+            child: Wrap(
+              children: <Widget>[
+                Form(
+                  key: _formKey,
+                  child: Container(
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    child: Column(
+                      children: <Widget>[
+                        Image.asset(
+                          "assets/images/logo.png",
+                          fit: BoxFit.fitWidth,
+                          height: 130,
+                        ),
+                        SizedBox(
+                          height: 60,
+                        ),
+                        TextFormField(
+                          textInputAction: TextInputAction.next,
+                          decoration: InputDecoration(
+                            labelText: "E-Mail",
+                            icon: Icon(Icons.mail),
+                            suffixIcon: isMail == null
+                                ? Container(
+                                    width: 24,
+                                  )
+                                : isMail
                                     ? Icon(Icons.check)
                                     : Icon(Icons.error_outline),
-                              ),
-                              controller: _txtMail,
-                              onChanged: (String text) {
-                                checkMail(text);
-                              },
-                            ),
-                            SizedBox(height: 20),
-                            TextFormField(
-                              decoration: InputDecoration(
-                                labelText: "Password",
-                                icon: Icon(Icons.lock),
-                                suffixIcon: validPassword == null
-                                    ? Container(
-                                  width: 24,
-                                )
-                                    : validPassword
+                          ),
+                          controller: _txtMail,
+                          onChanged: (String text) {
+                            checkMail(text);
+                          },
+                        ),
+                        SizedBox(height: 20),
+                        TextFormField(
+                          decoration: InputDecoration(
+                            labelText: "Password",
+                            icon: Icon(Icons.lock),
+                            suffixIcon: validPassword == null
+                                ? Container(
+                                    width: 24,
+                                  )
+                                : validPassword
                                     ? Icon(Icons.check)
                                     : Icon(Icons.error_outline),
-                              ),
-                              obscureText: true,
-                              onChanged: (String text) {
-                                checkPassword(text);
-                              },
-                              controller: _txtPassword,
+                          ),
+                          obscureText: true,
+                          onChanged: (String text) {
+                            checkPassword(text);
+                          },
+                          controller: _txtPassword,
+                        ),
+                        SizedBox(height: 40),
+                        MaterialButton(
+                          minWidth: MediaQuery.of(context).size.width * 0.6,
+                          color: Theme.of(context).primaryColor,
+                          child: Text(
+                            "Login".toUpperCase(),
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          onPressed: () {
+                            loginUser();
+                          },
+                        ),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: FlatButton(
+                            textColor: Theme.of(context).primaryColor,
+                            child: Text(
+                              "Forget password ?",
                             ),
-                            SizedBox(height: 40),
-                            MaterialButton(
-                              minWidth: MediaQuery.of(context).size.width * 0.6,
-                              color: Theme.of(context).primaryColor,
-                              child: Text(
-                                "Login".toUpperCase(),
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              onPressed: () {
-                                loginUser();
-                              },
-                            ),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: FlatButton(
-                                textColor: Theme.of(context).primaryColor,
-                                child: Text(
-                                  "Forget password ?",
-                                ),
-                                onPressed: () {},
-                              ),
-                            ),
-                            if (isLoading)
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
+                            onPressed: () {},
+                          ),
+                        ),
+                        if (isLoading)
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
                             child: LoadingWidget(),
                           )
-                          ],
-                        ),
-                      ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              )),
+              ],
+            ),
+          )),
           Positioned(
             width: MediaQuery.of(context).size.width,
             top: MediaQuery.of(context).size.height - 75,

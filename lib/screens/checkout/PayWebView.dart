@@ -26,6 +26,14 @@ class _PayWebViewState extends State<PayWebView> {
     flutterWebviewPlugin.onUrlChanged.listen((String url) {
       print("Basem log ${url}");
     });
+    flutterWebviewPlugin.onStateChanged.listen((state) async {
+      if (state.type == WebViewState.finishLoad) {
+        String script =
+            'window.addEventListener("message", receiveMessage, false);' +
+                'function receiveMessage(event) {InterfaceName.methodName(event.data);}';
+        flutterWebviewPlugin.evalJavascript(script);
+      }
+    });
 
     print("Basem html ${_loadHTML()}");
   }

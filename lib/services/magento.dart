@@ -76,26 +76,42 @@ class MagentoApi {
 
   // Map<String, ProductAttribute> attributes;
 
-  Future<List<AppBanner>> getSliderImages() async {
+  // getting home page style
+  Future<HomePageStyle> getHomePage() async {
     try {
-      var response = await http.get("$domain/rest/default/V1/cmsBlock/25",
+      var response = await http.get("$domain/rest/default/V1/cmsPage/14",
           headers: {'Authorization': 'Bearer ' + accessToken});
       String content = convert.jsonDecode(response.body)["content"];
       var jsonContent = convert
           .jsonDecode(content.replaceAll("<p>", "").replaceAll("</p>", ""));
-      List<AppBanner> list = [];
-      for (var item in jsonContent) {
-        String type = item["type"];
-        int id = item["id"];
-        String image = item["image"];
-        var baner = AppBanner(type, id, "$domain/pub/media/$image");
-        list.add(baner);
-      }
 
-      return list;
-    } catch (e) {}
-    return [];
+      return HomePageStyle.fromMap(jsonContent);
+    } catch (e) {
+      throw e;
+    }
   }
+
+//
+//  Future<List<AppBanner>> getSliderImages() async {
+//    try {
+//      var response = await http.get("$domain/rest/default/V1/cmsBlock/25",
+//          headers: {'Authorization': 'Bearer ' + accessToken});
+//      String content = convert.jsonDecode(response.body)["content"];
+//      var jsonContent = convert
+//          .jsonDecode(content.replaceAll("<p>", "").replaceAll("</p>", ""));
+//      List<AppBanner> list = [];
+//      for (var item in jsonContent) {
+//        String type = item["type"];
+//        int id = item["id"];
+//        String image = item["image"];
+//        var baner = AppBanner(type, id, "$domain/pub/media/$image");
+//        list.add(baner);
+//      }
+//
+//      return list;
+//    } catch (e) {}
+//    return [];
+//  }
 
 // get User Token
 
@@ -106,27 +122,27 @@ class MagentoApi {
     return true;
   }
 
-// get Deals API
-  Future<List<AppBanner>> getDeals() async {
-    try {
-      var response = await http.get("$domain/rest/default/V1/cmsPage/14",
-          headers: {'Authorization': 'Bearer ' + accessToken});
-      String content = convert.jsonDecode(response.body)["content"];
-      var jsonContent = convert
-          .jsonDecode(content.replaceAll("<p>", "").replaceAll("</p>", ""));
-      List<AppBanner> list = [];
-      for (var item in jsonContent) {
-        String type = item["type"];
-        int id = item["id"];
-        String image = item["image"];
-        var baner = AppBanner(type, id, "$domain/pub/media/$image");
-        list.add(baner);
-      }
-
-      return list;
-    } catch (e) {}
-    return [];
-  }
+//// get Deals API
+//  Future<List<AppBanner>> getDeals() async {
+//    try {
+//      var response = await http.get("$domain/rest/default/V1/cmsPage/14",
+//          headers: {'Authorization': 'Bearer ' + accessToken});
+//      String content = convert.jsonDecode(response.body)["content"];
+//      var jsonContent = convert
+//          .jsonDecode(content.replaceAll("<p>", "").replaceAll("</p>", ""));
+//      List<AppBanner> list = [];
+//      for (var item in jsonContent) {
+//        String type = item["type"];
+//        int id = item["id"];
+//        String image = item["image"];
+//        var baner = AppBanner(type, id, "$domain/pub/media/$image");
+//        list.add(baner);
+//      }
+//
+//      return list;
+//    } catch (e) {}
+//    return [];
+//  }
 
   Future<List<Product>> getLastProducts(int currentPage) async {
     try {
@@ -392,39 +408,38 @@ class MagentoApi {
         "$domain/rest/default/V1/integration/customer/token",
         body: convert.jsonEncode({"username": username, "password": password}),
         headers: {"Content-Type": "application/json"});
-    print("Basem ${response.body}");
+
     String cookie = convert.jsonDecode(response.body);
     SharedPreferences shared = await SharedPreferences.getInstance();
     shared.setString("cookie", cookie);
     fuckingCookies = _extractResponseCookies(response.headers);
     shared.setString("fuckingCookies", fuckingCookies);
-
+    print("Basem cookie $fuckingCookies");
     return getUserInfo(cookie);
   }
 
   Set _cookiesKeysToIgnore = Set.from([
     "SameSite",
-    "path",
-    "domain",
+    "Path",
+    "Domain",
     "Max-Age",
-    "Expires",
+    "expires",
     "Secure",
     "HttpOnly",
-    "expires",
     "form_key"
-  ]);
+  ]).map((f) => f.toLowerCase()).toSet();
 
   String _extractResponseCookies(responseHeaders) {
     Map<String, String> cookies = {};
     for (var key in responseHeaders.keys) {
-      if ((key == 'set-cookie' || key == 'Set-cookie')) {
+      if ((key.toLowerCase() == 'set-cookie')) {
         String cookie = responseHeaders[key];
         cookie.split(",").forEach((String one) {
           one
               .split(";")
               .map((x) => x.trim().split("="))
               .where((x) => x.length == 2)
-              .where((x) => !_cookiesKeysToIgnore.contains(x[0]))
+              .where((x) => !_cookiesKeysToIgnore.contains(x[0].toLowerCase()))
               .forEach((x) => cookies[x[0]] = x[1]);
         });
         break;
@@ -440,7 +455,6 @@ class MagentoApi {
       'Authorization': 'Bearer ' + token,
       "Content-Type": "application/json"
     });
-    print("Basem user is ${res.body}");
 
     var user = User.fromMap(convert.jsonDecode(res.body));
     user.saveUserLocal(user);
@@ -698,7 +712,7 @@ class MagentoApi {
       var endPoint = "?";
       if (name != null) {
         endPoint +=
-        "searchCriteria[filter_groups][0][filters][0][field]=name&searchCriteria[filter_groups][0][filters][0][value]=%$name%&searchCriteria[filter_groups][0][filters][0][condition_type]=like";
+            "searchCriteria[filter_groups][0][filters][0][field]=name&searchCriteria[filter_groups][0][filters][0][value]=%$name%&searchCriteria[filter_groups][0][filters][0][condition_type]=like";
       }
       if (page != null) {
         endPoint += "&searchCriteria[currentPage]=$page";

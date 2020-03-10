@@ -182,14 +182,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             labelText: "Password",
                             icon: Icon(Icons.lock),
                             suffixIcon:
-                            isPasswordValid ? Icon(Icons.check) : null),
+                                isPasswordValid ? Icon(Icons.check) : null),
                         obscureText: true,
                         controller: _password,
                         onChanged: (String text) {
                           setState(() {
                             isPasswordValid =
                                 RegExp(r'[a-zA-Z0-9]+', multiLine: false)
-                                    .hasMatch(_password.text) &&
+                                        .hasMatch(_password.text) &&
                                     _password.text.length >= 8;
                           });
                         },

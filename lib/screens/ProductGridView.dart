@@ -148,7 +148,7 @@ class _ProductGridViewState extends State<ProductGridView> {
           Expanded(
             child: products.isEmpty
                 ? Center(
-              child: LoadingWidget(),
+                    child: LoadingWidget(),
                   )
                 : NotificationListener<ScrollNotification>(
                     onNotification: (ScrollNotification sn) {

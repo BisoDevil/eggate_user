@@ -40,7 +40,7 @@ class _HomeSalesState extends State<HomeSale> {
   Widget build(BuildContext context) {
     return _products.isEmpty
         ? Center(
-      child: LoadingWidget(),
+            child: LoadingWidget(),
           )
         : NotificationListener<ScrollNotification>(
             onNotification: (ScrollNotification sn) {

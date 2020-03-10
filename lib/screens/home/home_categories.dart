@@ -19,7 +19,7 @@ class _HomeCategoriesState extends State<HomeCategories> {
       builder: (BuildContext context, AsyncSnapshot snapshot) => !snapshot
               .hasData
           ? Center(
-        child: LoadingWidget(),
+              child: LoadingWidget(),
             )
           : ListView.builder(
               itemCount: snapshot.data.length,

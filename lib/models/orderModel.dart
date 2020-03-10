@@ -114,7 +114,7 @@ class Totals {
   String toJson() => json.encode(toMap());
 
   factory Totals.fromMap(Map<String, dynamic> json) => Totals(
-    grandTotal: json["grand_total"].toDouble() * MagentoApi.rate,
+        grandTotal: json["grand_total"].toDouble() * MagentoApi.rate,
         baseGrandTotal: json["base_grand_total"].toDouble(),
         subtotal: json["subtotal"].toDouble() * MagentoApi.rate,
         baseSubtotal: json["base_subtotal"].toDouble(),

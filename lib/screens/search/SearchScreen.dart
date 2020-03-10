@@ -72,7 +72,7 @@ class _SearchScreenState extends State<SearchScreen> {
       ),
       body: isSearching
           ? Center(
-        child: LoadingWidget(),
+              child: LoadingWidget(),
             )
           : products.isEmpty
               ? Container()

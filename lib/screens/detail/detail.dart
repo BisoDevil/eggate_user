@@ -91,22 +91,16 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               height: 43,
               child: Text(
                 "Add to cart",
-                style: Theme
-                    .of(context)
-                    .textTheme
-                    .title
-                    .copyWith(
-                  color: Colors.white,
-                  fontSize: 22,
-                ),
+                style: Theme.of(context).textTheme.title.copyWith(
+                      color: Colors.white,
+                      fontSize: 22,
+                    ),
               ),
               clipBehavior: Clip.antiAliasWithSaveLayer,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(4),
               ),
-              color: Theme
-                  .of(context)
-                  .primaryColor,
+              color: Theme.of(context).primaryColor,
               onPressed: () {
                 saveToCart();
               },

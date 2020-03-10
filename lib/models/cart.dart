@@ -32,7 +32,7 @@ class Cart {
   String toJson() => json.encode(toMap());
 
   factory Cart.fromMap(Map<String, dynamic> json) => Cart(
-    itemId: json["item_id"],
+        itemId: json["item_id"],
         sku: json["sku"],
         qty: json["qty"],
         name: json["name"],

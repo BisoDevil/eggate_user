@@ -62,9 +62,9 @@ class ProductReview extends StatelessWidget {
                           trailing: Text(
                             DateFormat("MMM d yyyy").format(item.createdAt),
                             style:
-                            Theme.of(context).textTheme.subtitle.copyWith(
-                              fontSize: 10,
-                            ),
+                                Theme.of(context).textTheme.subtitle.copyWith(
+                                      fontSize: 10,
+                                    ),
                           ),
                           isThreeLine: true,
                         )

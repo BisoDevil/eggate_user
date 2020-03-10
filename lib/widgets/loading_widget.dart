@@ -8,7 +8,7 @@ class LoadingWidget extends StatefulWidget {
 class _LoadingWidgetState extends State<LoadingWidget>
     with TickerProviderStateMixin {
   AnimationController _controller;
-  Tween<double> _tween = Tween(begin: 0.25, end: 2);
+  Tween<double> _tween = Tween(begin: 1, end: 2);
 
   @override
   void initState() {
@@ -31,7 +31,7 @@ class _LoadingWidgetState extends State<LoadingWidget>
         child: Align(
           child: ScaleTransition(
             scale: _tween.animate(
-              CurvedAnimation(parent: _controller, curve: Curves.elasticOut),
+              CurvedAnimation(parent: _controller, curve: Curves.bounceInOut),
             ),
             child: CircleAvatar(
               backgroundColor: Colors.white,

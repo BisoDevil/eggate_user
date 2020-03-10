@@ -51,7 +51,7 @@ class User {
   String toJson() => json.encode(toMap());
 
   factory User.fromMap(Map<String, dynamic> json) => User(
-    id: json["id"],
+        id: json["id"],
         groupId: json["group_id"],
         defaultBilling: json["default_billing"],
         defaultShipping: json["default_shipping"],
@@ -160,7 +160,7 @@ class Address {
   String toJson() => json.encode(toMap());
 
   factory Address.fromMap(Map<String, dynamic> json) => Address(
-        id: json["id"],
+    id: json["id"],
     customerId: json["customer_id"],
     region: Region.fromMap(json["region"]),
     regionId: json["region_id"],

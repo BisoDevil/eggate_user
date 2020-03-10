@@ -220,16 +220,14 @@ class _AddressWidgetState extends State<AddressWidget> {
           ),
           leading: widget.address.defaultShipping == 1
               ? Icon(
-            Icons.check,
-            size: 30,
-            color: Theme
-                .of(context)
-                .primaryColor,
-          )
+                  Icons.check,
+                  size: 30,
+                  color: Theme.of(context).primaryColor,
+                )
               : Container(
-            width: 30,
-            height: 30,
-          ),
+                  width: 30,
+                  height: 30,
+                ),
           onTap: () {
             widget.onClick();
           },
