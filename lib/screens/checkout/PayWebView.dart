@@ -20,12 +20,9 @@ class _PayWebViewState extends State<PayWebView> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     final flutterWebviewPlugin = new FlutterWebviewPlugin();
-    flutterWebviewPlugin.onUrlChanged.listen((String url) {
-      print("Basem log ${url}");
-    });
+    flutterWebviewPlugin.onUrlChanged.listen((String url) {});
     flutterWebviewPlugin.onStateChanged.listen((state) async {
       if (state.type == WebViewState.finishLoad) {
         String script =

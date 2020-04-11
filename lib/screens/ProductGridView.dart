@@ -165,7 +165,9 @@ class _ProductGridViewState extends State<ProductGridView> {
                     child: GridView.count(
                       crossAxisCount: 2,
                       scrollDirection: Axis.vertical,
-                      childAspectRatio: 9 / 14,
+                      shrinkWrap: true,
+                      crossAxisSpacing: 3,
+                      childAspectRatio: (9 / 12),
                       padding: EdgeInsets.symmetric(horizontal: 8),
                       children: products.map((p) => ProductCard(p)).toList(),
                     ),

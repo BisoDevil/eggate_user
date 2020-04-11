@@ -89,8 +89,10 @@ class _ProductCardState extends State<ProductCard> {
                           fit: StackFit.expand,
                           children: <Widget>[
                             CachedNetworkImage(
-                              imageUrl: widget
-                                  ._product.mediaGalleryEntries.first.file,
+                              imageUrl:
+                                  widget._product.extensionAttributes.image ??
+                                      widget._product.mediaGalleryEntries.first
+                                          .file,
                               fit: BoxFit.fill,
                               placeholder: (q, w) => LoadingWidget(),
                               placeholderFadeInDuration:
@@ -102,117 +104,112 @@ class _ProductCardState extends State<ProductCard> {
                                     widget._product.extensionAttributes
                                             .discountPercentage >
                                         0.0
-                          ? Padding(
-                        padding: const EdgeInsets.only(
-                          top: 20,
+                                ? Padding(
+                                    padding: const EdgeInsets.only(
+                                      top: 20,
+                                    ),
+                                    child: Text(
+                                      " ${widget._product.extensionAttributes.discountPercentage}% ",
+                                      style: ThemeData.light()
+                                          .textTheme
+                                          .body1
+                                          .copyWith(
+                                            backgroundColor: Colors.red,
+                                            color: Colors.white,
+                                          ),
+                                      maxLines: 1,
+                                    ),
+                                  )
+                                : Container(),
+                          ],
                         ),
-                        child: Text(
-                          " ${widget._product.extensionAttributes.discountPercentage}% ",
-                          style: ThemeData.light()
-                              .textTheme
-                              .body1
-                              .copyWith(
-                            backgroundColor: Colors.red,
-                            color: Colors.white,
-                          ),
-                          maxLines: 1,
-                        ),
-                      )
-                          : Container(),
-                    ],
-                  ),
-                ),
-                Container(
-                  alignment: Alignment.centerLeft,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      widget._product.name,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.title.copyWith(
-                        fontSize: 12,
                       ),
-                      maxLines: 2,
-                      textAlign: TextAlign.start,
-                    ),
-                  ),
-                ),
-                Container(
-                  alignment: Alignment.centerLeft,
-                  padding: EdgeInsets.only(
-                    left: 8,
-                  ),
-                  child: Column(
-                    children: <Widget>[
-                      if (widget._product.price !=
-                          widget._product.extensionAttributes
-                              .discountedPrice)
-                        Text(
-                          "${widget._product.price} ${MagentoApi.currency}",
-                          style: Theme.of(context)
-                              .textTheme
-                              .body1
-                              .copyWith(
-                              fontSize: 12,
-                              color: Colors.black54,
-                              decoration: TextDecoration.lineThrough),
-                        ),
-                      Text(
-                        "${widget._product.extensionAttributes
-                            .discountedPrice} ${MagentoApi.currency}",
-                        style: Theme
-                            .of(context)
-                            .textTheme
-                            .body1
-                            .copyWith(
-                          fontSize: 14,
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(
-                    left: 8,
-                    right: 8,
-                  ),
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: MaterialButton(
-                          clipBehavior: Clip.antiAliasWithSaveLayer,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(4)),
-                          onPressed: () {
-                            _saveToCart();
-                          },
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
                           child: Text(
-                            "Add to cart",
-                            style: Theme.of(context)
-                                .textTheme
-                                .body1
-                                .copyWith(
-                                fontSize: 12, color: Colors.white),
+                            widget._product.name,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.title.copyWith(
+                                  fontSize: 12,
+                                ),
+                            maxLines: 2,
+                            textAlign: TextAlign.start,
                           ),
-                          height: 25,
-                          color: Theme.of(context).primaryColor,
                         ),
                       ),
-                      IconButton(
-                        iconSize: 20,
-                        icon: Icon(
-                          Icons.favorite_border,
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        padding: EdgeInsets.only(
+                          left: 8,
                         ),
-                        onPressed: () {
-                          print(
-                              "Basem button fav pressed ${widget._product.sku}");
-                        },
+                        child: Column(
+                          children: <Widget>[
+                            if (widget._product.price !=
+                                widget._product.extensionAttributes
+                                    .discountedPrice)
+                              Text(
+                                "${widget._product.price} ${MagentoApi.currency}",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .body1
+                                    .copyWith(
+                                        fontSize: 12,
+                                        color: Colors.black54,
+                                        decoration: TextDecoration.lineThrough),
+                              ),
+                            Text(
+                              "${widget._product.extensionAttributes.discountedPrice} ${MagentoApi.currency}",
+                              style: Theme.of(context).textTheme.body1.copyWith(
+                                    fontSize: 14,
+                                  ),
+                            )
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: 8,
+                          right: 8,
+                        ),
+                        child: Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: MaterialButton(
+                                clipBehavior: Clip.antiAliasWithSaveLayer,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(4)),
+                                onPressed: () {
+                                  _saveToCart();
+                                },
+                                child: Text(
+                                  "Add to cart",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .body1
+                                      .copyWith(
+                                          fontSize: 12, color: Colors.white),
+                                ),
+                                height: 25,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                            ),
+                            //   IconButton(
+                            //     iconSize: 20,
+                            //     icon: Icon(
+                            //       Icons.favorite_border,
+                            //     ),
+                            //     onPressed: () {
+                            //       print(
+                            //           "Basem button fav pressed ${widget._product.sku}");
+                            //     },
+                            //   )
+                          ],
+                        ),
                       )
                     ],
                   ),
-                )
-              ],
-            ),
           ),
         ),
       ),

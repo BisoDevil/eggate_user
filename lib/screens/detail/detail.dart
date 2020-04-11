@@ -56,7 +56,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       body: ListView(
         children: <Widget>[
           SizedBox(
-            height: 350,
+            height: MediaQuery.of(context).size.height * .7,
             width: double.infinity,
             child: Carousel(
               images: List.generate(

@@ -42,6 +42,7 @@ class HomeSectionSlider extends StatelessWidget {
                 imageUrl: slide.image,
                 placeholder: (q, w) => LoadingWidget(),
                 placeholderFadeInDuration: Duration(milliseconds: 400),
+                fit: BoxFit.fitHeight,
               ),
             ),
           )

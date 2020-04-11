@@ -72,8 +72,7 @@ class User {
             ExtensionAttributes.fromMap(json["extension_attributes"]),
       );
 
-  Map<String, dynamic> toMap() =>
-      {
+  Map<String, dynamic> toMap() => {
         "id": id,
         "group_id": groupId,
         "default_billing": defaultBilling,
@@ -108,7 +107,7 @@ class User {
 
   Future<User> getUserLocal() async {
     final LocalStorage storage = new LocalStorage("eggate");
-    final ready = await storage.ready;
+    await storage.ready;
 
     final json = await storage.getItem("user");
     if (json == null) {
@@ -119,7 +118,7 @@ class User {
 
   void logoutUser() async {
     final LocalStorage storage = new LocalStorage("eggate");
-    final ready = await storage.ready;
+    await storage.ready;
     await storage.deleteItem("user");
   }
 }
@@ -177,7 +176,7 @@ class Address {
     defaultBilling: (json["default_billing"] is bool)
         ? (json["default_billing"] as bool) == true ? 1 : 0
         : json["default_billing"],
-      );
+  );
 
   Map<String, dynamic> toMap() => {
         "id": id,

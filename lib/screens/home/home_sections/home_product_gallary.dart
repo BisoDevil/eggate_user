@@ -14,7 +14,9 @@ class HomeProductGallary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: MagentoApi().fetchProductsByCategory(categoryId: categoryList.id),
+      future: categoryList == null
+          ? MagentoApi().getLastProducts(1)
+          : MagentoApi().fetchProductsByCategory(categoryId: categoryList.id),
       initialData: [
         Product(),
         Product(),
@@ -34,7 +36,7 @@ class HomeProductGallary extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Text(
-                    categoryList.name,
+                    categoryList != null ? categoryList.name : "New arrivals",
                     style: Theme.of(context).textTheme.title,
                   ),
                   FlatButton(

@@ -116,27 +116,31 @@ class CustomAttribute {
 class ExtensionAttributes {
   num discountedPrice;
   num discountPercentage;
+  String image;
 
-  ExtensionAttributes({this.discountedPrice, this.discountPercentage});
+  ExtensionAttributes(
+      {this.discountedPrice, this.discountPercentage, this.image});
 
   factory ExtensionAttributes.fromJson(String str) =>
       ExtensionAttributes.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
-  factory ExtensionAttributes.fromMap(Map<String, dynamic> json) =>
+  factory ExtensionAttributes.fromMap(
+          Map<String, dynamic> json) =>
       ExtensionAttributes(
           discountedPrice: json["discounted_price"] != null
               ? json["discounted_price"] * MagentoApi.rate
               : null,
           discountPercentage: json["discount_percentage"] != null
               ? json["discount_percentage"] * MagentoApi.rate
-              : null);
+              : null,
+          image: json["image"]);
 
-  Map<String, dynamic> toMap() =>
-      {
+  Map<String, dynamic> toMap() => {
         "discounted_price": discountedPrice,
-        "discount_percentage": discountPercentage
+        "discount_percentage": discountPercentage,
+        "image": image
       };
 }
 

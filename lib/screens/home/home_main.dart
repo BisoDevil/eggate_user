@@ -42,9 +42,7 @@ class _HomeMainState extends State<HomeMain> {
                 SizedBox(
                   height: 8,
                 ),
-                HomeProductGallary(
-                  categoryList: CategoryList(id: 137, name: "Replica"),
-                ),
+                HomeProductGallary(),
                 SizedBox(
                   height: 8,
                 ),

@@ -56,7 +56,9 @@ class HomeBaner {
   factory HomeBaner.fromMap(Map<String, dynamic> json) => HomeBaner(
         type: json["type"],
         id: json["id"],
-        image: "${MagentoApi().domain}pub/media/${json["image"]}",
+        image: json["image"].toString().contains("http")
+            ? json["image"]
+            : "${MagentoApi().domain}pub/media/${json["image"]}",
       );
 
   Map<String, dynamic> toMap() => {

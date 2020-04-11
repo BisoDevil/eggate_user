@@ -35,7 +35,7 @@ class _HomeProfileState extends State<HomeProfile> {
     });
   }
 
-  var wishListCount = 6;
+  var wishListCount = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -125,31 +125,32 @@ class _HomeProfileState extends State<HomeProfile> {
               indent: 75,
               //endIndent: 20,
             ),
-          Card(
-            margin: EdgeInsets.only(bottom: 2.0),
-            elevation: 0,
-            child: ListTile(
-              leading: Icon(
-                Icons.favorite_border,
-                size: 26,
+          if (wishListCount > 0)
+            Card(
+              margin: EdgeInsets.only(bottom: 2.0),
+              elevation: 0,
+              child: ListTile(
+                leading: Icon(
+                  Icons.favorite_border,
+                  size: 26,
+                ),
+                title: Text("My wish list", style: TextStyle(fontSize: 15)),
+                trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+                  if (wishListCount > 0)
+                    Text(
+                      "$wishListCount items",
+                      style: TextStyle(
+                          fontSize: 14, color: Theme.of(context).primaryColor),
+                    ),
+                  SizedBox(width: 5),
+                  Icon(Icons.arrow_forward_ios, size: 18)
+                ]),
+                onTap: () {
+                  Navigator.of(context)
+                      .push(MyCustomRoute(builder: (q, w, e) => WishList()));
+                },
               ),
-              title: Text("My wish list", style: TextStyle(fontSize: 15)),
-              trailing: Row(mainAxisSize: MainAxisSize.min, children: [
-                if (wishListCount > 0)
-                  Text(
-                    "$wishListCount items",
-                    style: TextStyle(
-                        fontSize: 14, color: Theme.of(context).primaryColor),
-                  ),
-                SizedBox(width: 5),
-                Icon(Icons.arrow_forward_ios, size: 18)
-              ]),
-              onTap: () {
-                Navigator.of(context)
-                    .push(MyCustomRoute(builder: (q, w, e) => WishList()));
-              },
             ),
-          ),
           Divider(
             color: Colors.black12,
             height: 1.0,

@@ -33,7 +33,7 @@ class _HomeCategoriesState extends State<HomeCategories> {
                   print("Basem category id is ${snapshot.data[index].id}");
                 },
                 child: Container(
-                  height: 220,
+                  height: MediaQuery.of(context).size.height * 0.23,
                   width: double.infinity,
                   child: Card(
                     elevation: 2,

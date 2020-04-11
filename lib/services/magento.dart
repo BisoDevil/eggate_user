@@ -91,28 +91,6 @@ class MagentoApi {
     }
   }
 
-//
-//  Future<List<AppBanner>> getSliderImages() async {
-//    try {
-//      var response = await http.get("$domain/rest/default/V1/cmsBlock/25",
-//          headers: {'Authorization': 'Bearer ' + accessToken});
-//      String content = convert.jsonDecode(response.body)["content"];
-//      var jsonContent = convert
-//          .jsonDecode(content.replaceAll("<p>", "").replaceAll("</p>", ""));
-//      List<AppBanner> list = [];
-//      for (var item in jsonContent) {
-//        String type = item["type"];
-//        int id = item["id"];
-//        String image = item["image"];
-//        var baner = AppBanner(type, id, "$domain/pub/media/$image");
-//        list.add(baner);
-//      }
-//
-//      return list;
-//    } catch (e) {}
-//    return [];
-//  }
-
 // get User Token
 
   Future<bool> getCookie() async {
@@ -122,32 +100,10 @@ class MagentoApi {
     return true;
   }
 
-//// get Deals API
-//  Future<List<AppBanner>> getDeals() async {
-//    try {
-//      var response = await http.get("$domain/rest/default/V1/cmsPage/14",
-//          headers: {'Authorization': 'Bearer ' + accessToken});
-//      String content = convert.jsonDecode(response.body)["content"];
-//      var jsonContent = convert
-//          .jsonDecode(content.replaceAll("<p>", "").replaceAll("</p>", ""));
-//      List<AppBanner> list = [];
-//      for (var item in jsonContent) {
-//        String type = item["type"];
-//        int id = item["id"];
-//        String image = item["image"];
-//        var baner = AppBanner(type, id, "$domain/pub/media/$image");
-//        list.add(baner);
-//      }
-//
-//      return list;
-//    } catch (e) {}
-//    return [];
-//  }
-
   Future<List<Product>> getLastProducts(int currentPage) async {
     try {
       var response = await http.get(
-          "$domain/rest/default/V1/products?searchCriteria[sortOrders][0][field]=created_at&searchCriteria[pageSize]=25&searchCriteria[sortOrders][0][direction]=DESC&searchCriteria[currentPage]=$currentPage",
+          "$domain/rest/default/V1/products?searchCriteria[sortOrders][0][field]=created_at&searchCriteria[pageSize]=25&searchCriteria[sortOrders][0][direction]=DESC&searchCriteria[currentPage]=$currentPage&searchCriteria[filter_groups][0][filters][0][field]=price&searchCriteria[filter_groups][0][filters][0][value]=1&searchCriteria[filter_groups][0][filters][0][condition_type]=gt",
           headers: {'Authorization': 'Bearer ' + accessToken});
       var items = convert.jsonDecode(response.body)["items"];
       List<Product> list = [];
@@ -378,7 +334,7 @@ class MagentoApi {
 
   void saveToWishListLocal({Product product}) async {
     final LocalStorage storage = new LocalStorage("eggate");
-    final ready = await storage.ready;
+    await storage.ready;
   }
 
 // get category filters
@@ -600,7 +556,7 @@ class MagentoApi {
           },
         ));
     var body = convert.jsonDecode(response.body);
-    print("Basem shipping method ${body}");
+
     List<ShippingMethod> list = [];
     if (response.statusCode == 200) {
       for (var item in body) {

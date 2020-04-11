@@ -83,7 +83,7 @@ class HomeAds extends StatelessWidget {
                     child: CachedNetworkImage(
                       imageUrl: ads[i].image,
                       placeholder: (q, w) => LoadingWidget(),
-                      fit: BoxFit.fill,
+                      fit: BoxFit.fitHeight,
                       placeholderFadeInDuration: Duration(milliseconds: 300),
                     ),
                   ),
@@ -110,7 +110,7 @@ class HomeAds extends StatelessWidget {
                             child: CachedNetworkImage(
                               imageUrl: ads[i].image,
                               placeholder: (q, w) => LoadingWidget(),
-                              fit: BoxFit.fill,
+                              fit: BoxFit.fitWidth,
                               placeholderFadeInDuration:
                                   Duration(milliseconds: 300),
                             ),
@@ -132,9 +132,9 @@ class HomeAds extends StatelessWidget {
                                   child: CachedNetworkImage(
                                     imageUrl: ads[i + 1].image,
                                     placeholder: (q, w) => LoadingWidget(),
-                                    fit: BoxFit.fill,
+                                    fit: BoxFit.fitWidth,
                                     placeholderFadeInDuration:
-                                        Duration(milliseconds: 300),
+                                    Duration(milliseconds: 300),
                                   ),
                                 ),
                               ),

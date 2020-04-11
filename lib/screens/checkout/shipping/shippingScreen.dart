@@ -104,256 +104,248 @@ class _OrderReviewState extends State<OrderReview> {
           Expanded(
             child: _orderModel == null
                 ? Center(
-              child: LoadingWidget(),
-            )
+                    child: LoadingWidget(),
+                  )
                 : Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Text(
-                      "payment method".toUpperCase(),
-                      style: TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.w600),
-                    ),
-                    SizedBox(
-                      height: 4,
-                    ),
-                    Card(
-                      elevation: 1,
+                    padding: const EdgeInsets.all(8.0),
+                    child: SingleChildScrollView(
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          for (var i = 0;
-                          i < _orderModel.paymentMethods.length;
-                          i++)
-                            Column(
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                            "payment method".toUpperCase(),
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.w600),
+                          ),
+                          SizedBox(
+                            height: 4,
+                          ),
+                          Card(
+                            elevation: 1,
+                            child: Column(
+                              children: <Widget>[
+                                for (var i = 0;
+                                    i < _orderModel.paymentMethods.length;
+                                    i++)
+                                  Column(
+                                    children: <Widget>[
+                                      ListTile(
+                                        leading: selectedMethod == i
+                                            ? Icon(
+                                                Icons.check,
+                                                color: Theme.of(context)
+                                                    .primaryColor,
+                                              )
+                                            : Container(
+                                                width: 14,
+                                                height: 14,
+                                              ),
+                                        title: Text(
+                                          _orderModel.paymentMethods[i].title,
+                                          style: selectedMethod == i
+                                              ? TextStyle(
+                                                  fontWeight: FontWeight.bold)
+                                              : null,
+                                        ),
+                                        onTap: () {
+                                          setState(() {
+                                            selectedMethod = i;
+                                          });
+                                        },
+                                        trailing: Icon(
+                                          FontAwesomeIcons.moneyBillAlt,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
+                                      ),
+                                      Divider(
+                                        indent: 30,
+                                        endIndent: 30,
+                                      ),
+                                    ],
+                                  ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 12,
+                          ),
+                          Text(
+                            "Order summary".toUpperCase(),
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.w600),
+                          ),
+                          SizedBox(
+                            height: 4,
+                          ),
+                          Card(
+                            elevation: 1,
+                            child: Column(
                               children: <Widget>[
                                 ListTile(
-                                  leading: selectedMethod == i
-                                      ? Icon(
-                                    Icons.check,
-                                    color: Theme
-                                        .of(context)
-                                        .primaryColor,
-                                  )
-                                      : Container(
-                                    width: 14,
-                                    height: 14,
+                                  dense: true,
+                                  leading: Text(
+                                    "Subtotal",
                                   ),
-                                  title: Text(
-                                    _orderModel.paymentMethods[i].title,
-                                    style: selectedMethod == i
-                                        ? TextStyle(
-                                        fontWeight: FontWeight.bold)
-                                        : null,
+                                  trailing: Text(
+                                    "${MagentoApi.currency} ${_orderModel.totals.subtotal}",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                  onTap: () {
-                                    setState(() {
-                                      selectedMethod = i;
-                                    });
-                                  },
-                                  trailing: Icon(
-                                    FontAwesomeIcons.moneyBillAlt,
-                                    color: Theme
-                                        .of(context)
-                                        .primaryColor,
+                                ),
+                                ListTile(
+                                  dense: true,
+                                  leading: Text(
+                                    "Shipping Fee",
+                                  ),
+                                  trailing: Text(
+                                    "${MagentoApi.currency} ${_orderModel.totals.shippingAmount}",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
                                 Divider(
                                   indent: 30,
                                   endIndent: 30,
                                 ),
-                              ],
-                            ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: 12,
-                    ),
-                    Text(
-                      "Order summary".toUpperCase(),
-                      style: TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.w600),
-                    ),
-                    SizedBox(
-                      height: 4,
-                    ),
-                    Card(
-                      elevation: 1,
-                      child: Column(
-                        children: <Widget>[
-                          ListTile(
-                            dense: true,
-                            leading: Text(
-                              "Subtotal",
-                            ),
-                            trailing: Text(
-                              "${MagentoApi.currency} ${_orderModel.totals
-                                  .subtotal}",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          ListTile(
-                            dense: true,
-                            leading: Text(
-                              "Shipping Fee",
-                            ),
-                            trailing: Text(
-                              "${MagentoApi.currency} ${_orderModel.totals
-                                  .shippingAmount}",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          Divider(
-                            indent: 30,
-                            endIndent: 30,
-                          ),
-                          ListTile(
-                            dense: true,
-                            leading: Text(
-                              "Total",
-                              style:
-                              TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            trailing: Text(
-                              "${MagentoApi.currency} ${_orderModel.totals
-                                  .grandTotal}",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: 12,
-                    ),
-                    Text(
-                      "Ship to".toUpperCase(),
-                      style: TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.w600),
-                    ),
-                    SizedBox(
-                      height: 4,
-                    ),
-                    Card(
-                      elevation: 1,
-                      child: ListTile(
-                        dense: true,
-                        title: Text(
-                          "${widget.address.firstname} ${widget.address
-                              .lastname}",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text("${widget.address.street.first}"),
-                            SizedBox(
-                              height: 3,
-                            ),
-                            Text("${widget.address.telephone}")
-                          ],
-                        ),
-                        isThreeLine: true,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 12,
-                    ),
-                    Text(
-                      "your order".toUpperCase(),
-                      style: TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.w600),
-                    ),
-                    Card(
-                      elevation: 1,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          for (var item in carts)
-                            Column(
-                              children: <Widget>[
                                 ListTile(
-                                    dense: true,
-                                    leading: Stack(
-                                      children: <Widget>[
-                                        Image.network(
-                                          item.extensionAttributes.image,
-                                          height: 120,
-                                          width: 100,
-                                          fit: BoxFit.fitHeight,
-                                        ),
-                                      ],
+                                  dense: true,
+                                  leading: Text(
+                                    "Total",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  trailing: Text(
+                                    "${MagentoApi.currency} ${_orderModel.totals.grandTotal}",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
                                     ),
-                                    title: Text(
-                                      item.name,
-                                      maxLines: 3,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    subtitle: Column(
-                                      children: <Widget>[
-                                        Row(
-                                          children: <Widget>[
-                                            Text(
-                                              "QTY:",
-                                              style: TextStyle(
-                                                fontWeight:
-                                                FontWeight.bold,
-                                              ),
-                                            ),
-                                            Container(
-                                              width: 10,
-                                              child: Text(
-                                                item.qty.toString(),
-                                                textAlign:
-                                                TextAlign.center,
-                                                style: TextStyle(
-                                                  fontSize: 15,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        Row(
-                                          children: <Widget>[
-                                            Text(
-                                              "${item.price} ${MagentoApi
-                                                  .currency}",
-                                              style: TextStyle(
-                                                fontWeight:
-                                                FontWeight.bold,
-                                                fontSize: 14,
-                                              ),
-                                            ),
-                                          ],
-                                        )
-                                      ],
-                                    )),
-                                Divider(
-                                  indent: 40,
-                                )
+                                  ),
+                                ),
                               ],
                             ),
+                          ),
+                          SizedBox(
+                            height: 12,
+                          ),
+                          Text(
+                            "Ship to".toUpperCase(),
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.w600),
+                          ),
+                          SizedBox(
+                            height: 4,
+                          ),
+                          Card(
+                            elevation: 1,
+                            child: ListTile(
+                              dense: true,
+                              title: Text(
+                                "${widget.address.firstname} ${widget.address.lastname}",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text("${widget.address.street.first}"),
+                                  SizedBox(
+                                    height: 3,
+                                  ),
+                                  Text("${widget.address.telephone}")
+                                ],
+                              ),
+                              isThreeLine: true,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 12,
+                          ),
+                          Text(
+                            "your order".toUpperCase(),
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.w600),
+                          ),
+                          Card(
+                            elevation: 1,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                for (var item in carts)
+                                  Column(
+                                    children: <Widget>[
+                                      ListTile(
+                                          dense: true,
+                                          leading: Stack(
+                                            children: <Widget>[
+                                              Image.network(
+                                                item.extensionAttributes.image,
+                                                height: 120,
+                                                width: 100,
+                                                fit: BoxFit.fitHeight,
+                                              ),
+                                            ],
+                                          ),
+                                          title: Text(
+                                            item.name,
+                                            maxLines: 3,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          subtitle: Column(
+                                            children: <Widget>[
+                                              Row(
+                                                children: <Widget>[
+                                                  Text(
+                                                    "QTY:",
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    width: 10,
+                                                    child: Text(
+                                                      item.qty.toString(),
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style: TextStyle(
+                                                        fontSize: 15,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              Row(
+                                                children: <Widget>[
+                                                  Text(
+                                                    "${item.price} ${MagentoApi.currency}",
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 14,
+                                                    ),
+                                                  ),
+                                                ],
+                                              )
+                                            ],
+                                          )),
+                                      Divider(
+                                        indent: 40,
+                                      )
+                                    ],
+                                  ),
+                              ],
+                            ),
+                          )
                         ],
                       ),
-                    )
-                  ],
-                ),
-              ),
-            ),
+                    ),
+                  ),
           ),
           MaterialButton(
             minWidth: MediaQuery.of(context).size.width,

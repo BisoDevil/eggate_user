@@ -202,7 +202,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             labelText: "Confirm Password",
                             icon: Icon(Icons.lock),
                             suffixIcon:
-                            isConfirmValid ? Icon(Icons.check) : null),
+                                isConfirmValid ? Icon(Icons.check) : null),
                         obscureText: true,
                         controller: _confirmPassword,
                         onChanged: (String text) {
